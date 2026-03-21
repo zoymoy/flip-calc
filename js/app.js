@@ -151,6 +151,13 @@
     renderSummaries(results);
     renderCharts(results);
     updateSplitBar();
+    // ARV loss warning
+    const warn = document.getElementById('arv-warning');
+    if (warn) {
+      const isLoss = results.equity.netProfit < 0;
+      warn.classList.toggle('hidden', !isLoss);
+      if (isLoss) warn.textContent = t().arvWarning;
+    }
   }
 
   function updateSplitBar() {
@@ -195,6 +202,7 @@
       ['profit', tr.netProfit,          fmt(r.netProfit)],
       ['roi',    tr.roiOnCapital,       pctPlain(r.roi)],
       ['roi',    tr.annualROI,          pctPlain(r.annualROI)],
+      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin)],
     ];
     document.getElementById('eq-table').innerHTML = buildTableRows(rows);
   }
@@ -219,6 +227,7 @@
       ['profit-purple', tr.yourNetProfit, fmt(r.yourNetProfit)],
       ['roi-purple', tr.roiOnCapital,   pctPlain(r.roi)],
       ['roi-purple', tr.annualROI,      pctPlain(r.annualROI)],
+      ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin)],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed)],
     ];
     document.getElementById('p-table').innerHTML = buildTableRows(rows);
@@ -249,6 +258,7 @@
       ['profit', tr.netProfit,          fmt(r.netProfit)],
       ['roi',    tr.roiOnCapital,       pctPlain(r.roi)],
       ['roi',    tr.annualROI,          pctPlain(r.annualROI)],
+      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin)],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed)],
     ];
     document.getElementById('ln-table').innerHTML = buildTableRows(rows);

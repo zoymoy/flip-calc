@@ -53,7 +53,7 @@
 
     <!-- Scenario name bar -->
     <div class="scenario-bar">
-      <input type="text" id="scenario-name" data-i18n-ph="scenarioPlaceholder" placeholder="e.g. Floreasca 2BR deal" style="max-width:300px;">
+      <input type="text" id="scenario-name" data-i18n-ph="scenarioPlaceholder" placeholder="e.g. Floreasca 2BR deal" class="scenario-name-input">
       <button class="btn btn-primary" id="btn-save" data-i18n="saveScenario">Save Scenario</button>
       <button class="btn" id="btn-new" data-i18n="newScenario">+ New Scenario</button>
     </div>
@@ -153,6 +153,9 @@
 
       <!-- RIGHT: Results + Charts -->
       <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+        <!-- ARV loss warning -->
+        <div id="arv-warning" class="arv-warning hidden" data-i18n="arvWarning"></div>
 
         <!-- 3 scenario columns -->
         <div class="results-grid">

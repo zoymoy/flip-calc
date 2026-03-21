@@ -617,3 +617,29 @@ body.rtl .col-summary-list li::before { left: auto; right: 0; }
 .teal .col-summary-verdict { background: var(--teal); }
 .purple .col-summary-verdict { background: var(--purple); }
 .blue .col-summary-verdict { background: var(--blue); }
+
+/* ── Scenario name input ── */
+.scenario-name-input { max-width: 300px; }
+
+/* ── ARV loss warning ── */
+.arv-warning {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: var(--r);
+  padding: 9px 14px;
+  color: var(--amber);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* ── RTL: split bar grows from the right ── */
+body.rtl #split-bar-you { order: 2; }
+body.rtl #split-bar-you + div { order: 1; }
+
+/* ── Mobile: scenario bar wraps on small screens ── */
+@media (max-width: 480px) {
+  .scenario-bar { flex-wrap: wrap; }
+  .scenario-name-input { max-width: 100%; flex-basis: 100%; }
+  .scenario-bar .btn { flex: 1; }
+}
