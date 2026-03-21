@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlipCalc Romania — Fix &amp; Flip Investment Simulator</title>
+<meta name="description" content="Free fix-and-flip investment simulator for Bucharest real estate. Compare 100% equity, partnership, and mortgage scenarios with realistic Romanian cost assumptions.">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <span class="topbar-logo">FlipCalc<span>.ro</span></span>
+    <span class="topbar-tag">BUCHAREST · 2026</span>
+  </div>
+  <nav class="topbar-nav" id="topbar-nav">
+    <button class="nav-btn active" data-page="scenarios" data-i18n="navScenarios">Scenarios</button>
+    <button class="nav-btn" data-page="compare"   data-i18n="navCompare">Compare</button>
+    <button class="nav-btn" data-page="assumptions" data-i18n="navAssumptions">Assumptions</button>
+    <button class="nav-btn" data-page="about"     data-i18n="navAbout">About</button>
+  </nav>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="topbar-lang">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ro">RO</button>
+      <button class="lang-btn" data-lang="he">עב</button>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div id="toast" class="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE: SCENARIOS
+══════════════════════════════════════════════════════ -->
+<div id="page-scenarios" class="page active">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <span class="hero-flag">🇷🇴</span>
+      <h2 data-i18n="appSubtitle">Fix &amp; Flip Investment Simulator — Bucharest</h2>
+      <p class="hero-sub" data-i18n="tagline">Compare scenarios. Crunch numbers. Close deals.</p>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Scenario name bar -->
+    <div class="scenario-bar">
+      <input type="text" id="scenario-name" data-i18n-ph="scenarioPlaceholder" placeholder="e.g. Floreasca 2BR deal" style="max-width:300px;">
+      <button class="btn btn-primary" id="btn-save" data-i18n="saveScenario">Save Scenario</button>
+      <button class="btn" id="btn-new" data-i18n="newScenario">+ New Scenario</button>
+    </div>
+
+    <div class="layout-cols">
+
+      <!-- LEFT: Parameters panel -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <!-- Deal params -->
+        <div class="card">
+          <div class="card-section" data-i18n="sectionDeal">Deal Parameters</div>
+
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="purchasePrice">Purchase Price (€)</span><span class="range-val" id="inp-price-val">€80,000</span></div>
+            <input type="range" id="inp-price" min="30000" max="200000" step="5000" value="80000">
+          </div>
+
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="propertySize">Size (m²)</span><span class="range-val" id="inp-size-val">60 m²</span></div>
+            <input type="range" id="inp-size" min="20" max="200" step="5" value="60">
+          </div>
+
+          <div class="field">
+            <label data-i18n="renoQuality">Renovation Quality</label>
+            <select id="inp-reno-q">
+              <option value="low"    data-i18n="renoLow">Basic (€300/m²)</option>
+              <option value="mid" selected data-i18n="renoMid">Standard (€500/m²)</option>
+              <option value="high"   data-i18n="renoHigh">Premium (€800/m²)</option>
+              <option value="custom" data-i18n="renoCustom">Custom</option>
+            </select>
+          </div>
+
+          <div class="field hidden" id="custom-reno-field">
+            <label data-i18n="renoCustomAmt">Custom Renovation Cost (€)</label>
+            <input type="number" id="inp-reno-custom" value="30000" min="0" step="1000">
+          </div>
+
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="arv">After Repair Value — ARV (€)</span><span class="range-val" id="inp-arv-val">€150,000</span></div>
+            <input type="range" id="inp-arv" min="50000" max="350000" step="5000" value="150000">
+          </div>
+
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="projectMonths">Duration (months)</span><span class="range-val" id="inp-months-val">9 months</span></div>
+            <input type="range" id="inp-months" min="2" max="24" step="1" value="9">
+          </div>
+
+          <div class="field">
+            <label data-i18n="taxStructure">Tax Structure</label>
+            <select id="inp-tax">
+              <option value="individual" data-i18n="taxIndividual">Individual (10% CGT)</option>
+              <option value="company"    data-i18n="taxCompany">Company/SRL (16%)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Financing -->
+        <div class="card">
+          <div class="card-section" data-i18n="sectionFinancing">Financing</div>
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="mortgageRate">Mortgage Rate (%)</span><span class="range-val" id="inp-rate-val">6.5%</span></div>
+            <input type="range" id="inp-rate" min="3" max="12" step="0.25" value="6.5">
+          </div>
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="ltvPct">LTV (%)</span><span class="range-val" id="inp-ltv-val">70%</span></div>
+            <input type="range" id="inp-ltv" min="40" max="80" step="5" value="70">
+          </div>
+        </div>
+
+        <!-- Partnership -->
+        <div class="card">
+          <div class="card-section" data-i18n="sectionPartnership">Partnership</div>
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="yourSharePct">Your Share (%)</span><span class="range-val" id="inp-share-val">50%</span></div>
+            <input type="range" id="inp-share" min="10" max="90" step="5" value="50">
+            <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:6px;gap:2px;">
+              <div id="split-bar-you" style="width:50%;background:#534AB7;border-radius:3px;transition:width 0.2s;"></div>
+              <div style="flex:1;background:#CECBF6;border-radius:3px;"></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="range-row"><span class="range-label" data-i18n="mgmtFeePct">Mgmt Fee (% of profit)</span><span class="range-val" id="inp-mgmt-val">5%</span></div>
+            <input type="range" id="inp-mgmt" min="0" max="20" step="1" value="5">
+          </div>
+        </div>
+
+        <!-- Saved scenarios -->
+        <div class="card">
+          <div class="card-section" data-i18n="savedScenarios">Saved Scenarios</div>
+          <div id="saved-list" class="saved-list">
+            <div class="empty-state" data-i18n="noSavedScenarios">No saved scenarios yet.</div>
+          </div>
+        </div>
+
+      </div><!-- /left -->
+
+      <!-- RIGHT: Results + Charts -->
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+        <!-- 3 scenario columns -->
+        <div class="results-grid">
+
+          <!-- 100% Equity -->
+          <div class="scenario-col">
+            <div class="scenario-col-head teal">
+              <div class="col-dot"></div>
+              <span class="col-title" data-i18n="scenario100">100% Self</span>
+            </div>
+            <div class="col-metrics">
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="capitalRequired">Capital Required</div>
+                <div class="col-metric-val positive" id="eq-metric-capital">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="netProfitLabel">Net Profit</div>
+                <div class="col-metric-val positive" id="eq-metric-profit">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="roiOnCapital">ROI</div>
+                <div class="col-metric-val positive" id="eq-metric-roi">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="annualROI">Annual ROI</div>
+                <div class="col-metric-val positive" id="eq-metric-annroi">—</div>
+              </div>
+            </div>
+            <table class="cost-table" id="eq-table"></table>
+            <div class="col-summary teal" id="eq-summary"></div>
+          </div>
+
+          <!-- Partnership -->
+          <div class="scenario-col">
+            <div class="scenario-col-head purple">
+              <div class="col-dot"></div>
+              <span class="col-title" data-i18n="scenarioPartner">Partnership</span>
+            </div>
+            <div class="col-metrics">
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="yourCapital">Your Capital</div>
+                <div class="col-metric-val accent-purple" id="p-metric-capital">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="yourNetProfit">Your Profit</div>
+                <div class="col-metric-val accent-purple" id="p-metric-profit">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="roiOnCapital">ROI</div>
+                <div class="col-metric-val accent-purple" id="p-metric-roi">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="annualROI">Annual ROI</div>
+                <div class="col-metric-val accent-purple" id="p-metric-annroi">—</div>
+              </div>
+            </div>
+            <table class="cost-table" id="p-table"></table>
+            <div class="col-summary purple" id="p-summary"></div>
+          </div>
+
+          <!-- Loan -->
+          <div class="scenario-col">
+            <div class="scenario-col-head blue">
+              <div class="col-dot"></div>
+              <span class="col-title" data-i18n="scenarioLoan">With Loan</span>
+            </div>
+            <div class="col-metrics">
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="capitalRequired">Capital Required</div>
+                <div class="col-metric-val accent-blue" id="ln-metric-capital">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="netProfitLabel">Net Profit</div>
+                <div class="col-metric-val accent-blue" id="ln-metric-profit">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="roiOnCapital">ROI</div>
+                <div class="col-metric-val accent-blue" id="ln-metric-roi">—</div>
+              </div>
+              <div class="col-metric">
+                <div class="col-metric-lbl" data-i18n="annualROI">Annual ROI</div>
+                <div class="col-metric-val accent-blue" id="ln-metric-annroi">—</div>
+              </div>
+            </div>
+            <table class="cost-table" id="ln-table"></table>
+            <div class="col-summary blue" id="ln-summary"></div>
+          </div>
+
+        </div><!-- /results-grid -->
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title" data-i18n="chartROITitle">ROI Comparison</div>
+            <div class="chart-wrap"><canvas id="chart-roi"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title" data-i18n="chartCapitalTitle">Capital Required vs Net Profit</div>
+            <div class="chart-wrap"><canvas id="chart-capital"></canvas></div>
+          </div>
+          <div class="chart-card" style="grid-column:1/-1;">
+            <div class="chart-title" data-i18n="chartWaterfallTitle">Cost Waterfall (100% Equity)</div>
+            <div class="chart-wrap-tall"><canvas id="chart-waterfall"></canvas></div>
+          </div>
+        </div>
+
+      </div><!-- /right -->
+    </div><!-- /layout-cols -->
+  </div><!-- /content -->
+</div><!-- /page-scenarios -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE: COMPARE
+══════════════════════════════════════════════════════ -->
+<div id="page-compare" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <h2 data-i18n="compareTitle">Compare Saved Scenarios</h2>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-section" data-i18n="selectToCompare">Select scenarios to compare:</div>
+      <div id="compare-empty" class="empty-state" data-i18n="compareEmpty">Save at least 2 scenarios to compare.</div>
+      <div id="compare-checks"></div>
+    </div>
+    <div id="compare-charts-wrap" class="hidden">
+      <div class="compare-charts mt-2">
+        <div class="chart-card">
+          <div class="chart-title" data-i18n="chartROITitle">ROI on Capital (%)</div>
+          <div class="chart-wrap"><canvas id="chart-compare-roi"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title" data-i18n="annualROI">Annual ROI (%)</div>
+          <div class="chart-wrap"><canvas id="chart-compare-annroi"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title" data-i18n="netProfitLabel">Net Profit (€)</div>
+          <div class="chart-wrap"><canvas id="chart-compare-profit"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title" data-i18n="capitalRequired">Capital Required (€)</div>
+          <div class="chart-wrap"><canvas id="chart-compare-capital"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE: ASSUMPTIONS
+══════════════════════════════════════════════════════ -->
+<div id="page-assumptions" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <h2 data-i18n="assumptionsTitle">Data Sources &amp; Assumptions</h2>
+      <p class="hero-sub" data-i18n="assumptionsSubtitle">All default values are sourced from official Romanian authorities.</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="assumptions-grid">
+      <div class="card">
+        <div class="card-section" data-i18n="assumptionsCostSection">Acquisition Costs</div>
+        <div id="assumptions-acq"></div>
+      </div>
+      <div class="card">
+        <div class="card-section" data-i18n="assumptionsRenovation">Renovation Costs</div>
+        <div id="assumptions-reno"></div>
+      </div>
+      <div class="card">
+        <div class="card-section" data-i18n="assumptionsHolding">Holding Costs</div>
+        <div id="assumptions-hold"></div>
+      </div>
+      <div class="card">
+        <div class="card-section" data-i18n="assumptionsSale">Sale Costs</div>
+        <div id="assumptions-sale"></div>
+      </div>
+      <div class="card">
+        <div class="card-section" data-i18n="assumptionsTax">Taxation</div>
+        <div id="assumptions-tax"></div>
+      </div>
+      <div class="card">
+        <div class="card-section" data-i18n="assumptionsMarket">Bucharest Market Data (2026)</div>
+        <div id="assumptions-market"></div>
+      </div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-section">Sources</div>
+      <div id="assumptions-sources" class="source-list"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE: ABOUT
+══════════════════════════════════════════════════════ -->
+<div id="page-about" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <h2 data-i18n="aboutTitle">About FlipCalc Romania</h2>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="about-content">
+        <p data-i18n="aboutText">FlipCalc is a free, open-source investment simulator for the Romanian real estate fix-and-flip market.</p>
+        <h3>How it works</h3>
+        <p>Enter your deal parameters on the left panel. The calculator instantly computes realistic costs — notary fees, agent commissions, holding costs, and capital gains tax — and shows you net profit, ROI, and annual ROI for all three financing strategies side-by-side.</p>
+        <h3>Saving &amp; comparing</h3>
+        <p>Name your scenario and click "Save Scenario". Saved scenarios are stored in your browser (localStorage). Switch to the Compare page to run multi-scenario analysis across four metrics.</p>
+        <h3>Open source</h3>
+        <p>This project is fully open source. The source code, assumptions, and methodology are visible in the repository.</p>
+        <div class="disclaimer-bar" data-i18n="disclaimer">⚠️ For planning purposes only. Not financial advice. Consult a licensed advisor before investing.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="data/assumptions.js"></script>
+<script src="js/translations.js"></script>
+<script src="js/calculator.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
