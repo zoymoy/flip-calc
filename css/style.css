@@ -643,3 +643,30 @@ body.rtl #split-bar-you + div { order: 1; }
   .scenario-name-input { max-width: 100%; flex-basis: 100%; }
   .scenario-bar .btn { flex: 1; }
 }
+
+/* ── Negative scenario badge on column header ── */
+.col-head-loss::after {
+  content: "⚠ Loss";
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--red);
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-inline-start: auto;
+}
+.scenario-col-head { display: flex; align-items: center; }
+
+/* ── Print / PDF ── */
+@media print {
+  .topbar, .scenario-bar, #page-scenarios .hero,
+  .layout-cols > :first-child, .charts-grid,
+  #toast, #saved-list, .col-summary { display: none !important; }
+  body { background: #fff; color: #000; }
+  .layout-cols { display: block; }
+  .results-grid { display: flex; flex-direction: row; gap: 12px; }
+  .scenario-col { border: 1px solid #ccc; border-radius: 8px; padding: 12px; flex: 1; }
+  .scenario-col-head { border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+  .cost-table { width: 100%; font-size: 11px; }
+  a { color: inherit; text-decoration: none; }
+}

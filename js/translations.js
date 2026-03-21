@@ -103,6 +103,9 @@ window.TRANSLATIONS = {
     compareBtn: "Compare Selected",
     compareSelectTwo: "Select at least 2 scenarios to compare.",
     arvWarning: "⚠ At current inputs, this deal loses money. Check your ARV vs. total costs.",
+    shareScenario: "Share Link",
+    linkCopied: "Link copied to clipboard!",
+    printBtn: "Print / PDF",
 
     // Assumptions page
     assumptionsTitle: "Data Sources & Assumptions",
@@ -287,6 +290,9 @@ window.TRANSLATIONS = {
     compareBtn: "Compară selecția",
     compareSelectTwo: "Selectați cel puțin 2 scenarii pentru comparație.",
     arvWarning: "⚠ La parametrii actuali, această tranzacție pierde bani. Verificați ARV față de costurile totale.",
+    shareScenario: "Copiază link",
+    linkCopied: "Link copiat în clipboard!",
+    printBtn: "Printează / PDF",
 
     assumptionsTitle: "Surse de date și ipoteze",
     assumptionsSubtitle: "Toate valorile implicite sunt preluate din surse oficiale românești.",
@@ -465,6 +471,9 @@ window.TRANSLATIONS = {
     compareBtn: "השווה",
     compareSelectTwo: "יש לבחור לפחות 2 תרחישים להשוואה.",
     arvWarning: "⚠ בפרמטרים הנוכחיים, העסקה הזו מפסידה כסף. בדוק את ה-ARV לעומת העלויות הכוללות.",
+    shareScenario: "העתק קישור",
+    linkCopied: "הקישור הועתק!",
+    printBtn: "הדפסה / PDF",
 
     assumptionsTitle: "מקורות נתונים והנחות",
     assumptionsSubtitle: "כל ברירות המחדל לקוחות ממקורות רשמיים רומניים ונתוני שוק מאומתים.",

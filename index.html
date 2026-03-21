@@ -56,6 +56,8 @@
       <input type="text" id="scenario-name" data-i18n-ph="scenarioPlaceholder" placeholder="e.g. Floreasca 2BR deal" class="scenario-name-input">
       <button class="btn btn-primary" id="btn-save" data-i18n="saveScenario">Save Scenario</button>
       <button class="btn" id="btn-new" data-i18n="newScenario">+ New Scenario</button>
+      <button class="btn btn-ghost" id="btn-share" data-i18n="shareScenario">Share Link</button>
+      <button class="btn btn-ghost" id="btn-print" data-i18n="printBtn">Print / PDF</button>
     </div>
 
     <div class="layout-cols">
@@ -162,7 +164,7 @@
 
           <!-- 100% Equity -->
           <div class="scenario-col">
-            <div class="scenario-col-head teal">
+            <div class="scenario-col-head teal" id="eq-col-head">
               <div class="col-dot"></div>
               <span class="col-title" data-i18n="scenario100">100% Self</span>
             </div>
@@ -190,7 +192,7 @@
 
           <!-- Partnership -->
           <div class="scenario-col">
-            <div class="scenario-col-head purple">
+            <div class="scenario-col-head purple" id="p-col-head">
               <div class="col-dot"></div>
               <span class="col-title" data-i18n="scenarioPartner">Partnership</span>
             </div>
@@ -218,7 +220,7 @@
 
           <!-- Loan -->
           <div class="scenario-col">
-            <div class="scenario-col-head blue">
+            <div class="scenario-col-head blue" id="ln-col-head">
               <div class="col-dot"></div>
               <span class="col-title" data-i18n="scenarioLoan">With Loan</span>
             </div>

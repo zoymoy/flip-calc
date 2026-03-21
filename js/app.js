@@ -34,6 +34,14 @@
     if (savedLang && window.TRANSLATIONS[savedLang]) {
       lang = savedLang;
     }
+    // Restore shared scenario from URL hash (#s=<base64>)
+    try {
+      const hash = window.location.hash;
+      if (hash.startsWith('#s=')) {
+        const decoded = JSON.parse(atob(hash.slice(3)));
+        params = { ...params, ...decoded };
+      }
+    } catch (e) { /* malformed hash — ignore, use defaults */ }
     bindNav();
     bindLang();
     bindControls();
@@ -205,6 +213,7 @@
       ['roi',    tr.profitMargin,       pctPlain(r.profitMargin)],
     ];
     document.getElementById('eq-table').innerHTML = buildTableRows(rows);
+    document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
   function renderPartnership(r) {
@@ -231,6 +240,7 @@
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed)],
     ];
     document.getElementById('p-table').innerHTML = buildTableRows(rows);
+    document.getElementById('p-col-head')?.classList.toggle('col-head-loss', r.yourNetProfit < 0);
   }
 
   function renderLoan(r) {
@@ -262,6 +272,7 @@
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed)],
     ];
     document.getElementById('ln-table').innerHTML = buildTableRows(rows);
+    document.getElementById('ln-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
   function buildTableRows(rows) {
@@ -358,6 +369,8 @@
   function bindScenarioActions() {
     document.getElementById('btn-save')?.addEventListener('click', saveScenario);
     document.getElementById('btn-new')?.addEventListener('click', newScenario);
+    document.getElementById('btn-share')?.addEventListener('click', shareScenario);
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
   }
 
   function saveScenario() {
@@ -379,6 +392,14 @@
     };
     syncControlsToParams();
     recalc();
+  }
+
+  function shareScenario() {
+    try {
+      const encoded = btoa(JSON.stringify(params));
+      const url = window.location.href.split('#')[0] + '#s=' + encoded;
+      navigator.clipboard.writeText(url).then(() => showToast(t().linkCopied));
+    } catch (e) { /* clipboard not available */ }
   }
 
   function syncControlsToParams() {
