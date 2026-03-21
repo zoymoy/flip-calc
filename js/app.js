@@ -494,50 +494,52 @@
     const A = window.ASSUMPTIONS;
     const tr = t();
 
+    const row = (k, v) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`;
+
     const acqEl = document.getElementById('assumptions-acq');
     if (acqEl) acqEl.innerHTML = [
-      [tr.notaryFee, A.notaryFeePct + '% of purchase'],
-      [tr.buyerAgent, A.buyerAgentPct + '% (APAIR standard)'],
-      [tr.landRegistry, '€' + A.landRegistryFee + ' fixed (OCPI)'],
-      ['Transfer tax (individual)', A.transferTaxIndividualPct + '% above €' + A.transferTaxThreshold.toLocaleString()],
-      ['Bank setup fee', A.bankSetupFeePct + '% of loan'],
-    ].map(([k, v]) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`).join('');
+      [tr.notaryFee,              A.notaryFeePct + '% of purchase'],
+      [tr.buyerAgent,             A.buyerAgentPct + '% (APAIR)'],
+      [tr.landRegistry,           '€' + A.landRegistryFee + ' (OCPI)'],
+      [tr.assumptionsTransferTax, A.transferTaxIndividualPct + '% above €' + A.transferTaxThreshold.toLocaleString()],
+      [tr.assumptionsBankSetup,   A.bankSetupFeePct + '% of loan'],
+    ].map(([k, v]) => row(k, v)).join('');
 
     const renoEl = document.getElementById('assumptions-reno');
     if (renoEl) renoEl.innerHTML = [
-      [tr.renoLow, '€' + A.renoLow + '/m² — basic refresh'],
-      [tr.renoMid, '€' + A.renoMid + '/m² — full standard'],
-      [tr.renoHigh, '€' + A.renoHigh + '/m² — premium'],
-    ].map(([k, v]) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`).join('');
+      [tr.renoLow,  '€' + A.renoLow  + '/m²'],
+      [tr.renoMid,  '€' + A.renoMid  + '/m²'],
+      [tr.renoHigh, '€' + A.renoHigh + '/m²'],
+    ].map(([k, v]) => row(k, v)).join('');
 
     const holdEl = document.getElementById('assumptions-hold');
     if (holdEl) holdEl.innerHTML = [
-      ['Utilities (monthly)', '€' + A.utilityMonthly],
-      ['Property tax (monthly)', '€' + A.propertyTaxMonthly],
-      ['Building maintenance', '€' + A.buildingMaintMonthly + '/month'],
-    ].map(([k, v]) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`).join('');
+      [tr.assumptionsUtilities,    '€' + A.utilityMonthly],
+      [tr.assumptionsPropTax,      '€' + A.propertyTaxMonthly],
+      [tr.assumptionsBuildingMaint,'€' + A.buildingMaintMonthly],
+    ].map(([k, v]) => row(k, v)).join('');
 
     const saleEl = document.getElementById('assumptions-sale');
     if (saleEl) saleEl.innerHTML = [
-      [tr.sellerAgent, A.sellerAgentPct + '% (APAIR standard)'],
+      [tr.sellerAgent,  A.sellerAgentPct + '% (APAIR)'],
       [tr.sellerNotary, A.sellerNotaryPct + '% of sale price'],
-    ].map(([k, v]) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`).join('');
+    ].map(([k, v]) => row(k, v)).join('');
 
     const taxEl = document.getElementById('assumptions-tax');
     if (taxEl) taxEl.innerHTML = [
-      ['Individual (PF) — Fiscal Code Art. 111', A.cgtIndividualPct + '% flat on profit'],
-      ['Company/SRL', A.cgtCompanyPct + '% corporate tax'],
-    ].map(([k, v]) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`).join('');
+      [tr.assumptionsIndividual, A.cgtIndividualPct + '% flat on profit'],
+      [tr.assumptionsCompany,    A.cgtCompanyPct + '% corporate tax'],
+    ].map(([k, v]) => row(k, v)).join('');
 
     const mktEl = document.getElementById('assumptions-market');
     if (mktEl) mktEl.innerHTML = [
-      ['Avg price/m² (Bucharest)', '€' + A.avgPricePerSqmBucharest],
-      ['Avg gross rental yield', A.avgRentalYieldBucharest + '%'],
-      ['Avg days on market (renovated)', A.avgDaysOnMarket + ' days'],
-      ['Avg annual price growth (2026 forecast)', A.avgPriceGrowthAnnual + '%'],
-      ['Mortgage rate (non-resident)', A.mortgageRateDefault + '%'],
-      ['Max LTV (non-resident)', A.ltvMaxForeigner + '%'],
-    ].map(([k, v]) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`).join('');
+      [tr.assumptionsAvgPrice,      '€' + A.avgPricePerSqmBucharest],
+      [tr.assumptionsRentalYield,   A.avgRentalYieldBucharest + '%'],
+      [tr.assumptionsDaysOnMarket,  A.avgDaysOnMarket + ' days'],
+      [tr.assumptionsPriceGrowth,   A.avgPriceGrowthAnnual + '%'],
+      [tr.assumptionsMortgageRate,  A.mortgageRateDefault + '%'],
+      [tr.assumptionsMaxLtv,        A.ltvMaxForeigner + '%'],
+    ].map(([k, v]) => row(k, v)).join('');
 
     const srcEl = document.getElementById('assumptions-sources');
     if (srcEl) srcEl.innerHTML = A.sources.map(s =>

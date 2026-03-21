@@ -116,7 +116,28 @@ window.TRANSLATIONS = {
     // About
     aboutTitle: "About FlipCalc Romania",
     aboutText: "FlipCalc is a free, open-source investment simulator for the Romanian real estate fix-and-flip market. All assumptions are sourced from official Romanian authorities. This tool is for planning purposes only and does not constitute financial, legal, or investment advice.",
+    aboutHowTitle: "How it works",
+    aboutHowText: "Enter your deal parameters on the left panel. The calculator instantly computes realistic costs — notary fees, agent commissions, holding costs, and capital gains tax — and shows you net profit, ROI, and annual ROI for all three financing strategies side-by-side.",
+    aboutSaveTitle: "Saving & comparing",
+    aboutSaveText: "Name your scenario and click \"Save Scenario\". Saved scenarios are stored in your browser (localStorage). Switch to the Compare page to run multi-scenario analysis across four metrics.",
+    aboutOssTitle: "Open source",
+    aboutOssText: "This project is fully open source. The source code, assumptions, and methodology are visible in the repository.",
     disclaimer: "⚠️ For planning purposes only. Not financial advice. Consult a licensed advisor before investing.",
+
+    // Assumptions page labels
+    assumptionsTransferTax: "Transfer tax (individual)",
+    assumptionsBankSetup: "Bank setup fee",
+    assumptionsUtilities: "Utilities (monthly)",
+    assumptionsPropTax: "Property tax (monthly)",
+    assumptionsBuildingMaint: "Building maintenance",
+    assumptionsIndividual: "Individual (PF) — Fiscal Code Art. 111",
+    assumptionsCompany: "Company / SRL",
+    assumptionsAvgPrice: "Avg price/m² (Bucharest)",
+    assumptionsRentalYield: "Avg gross rental yield",
+    assumptionsDaysOnMarket: "Avg days on market (renovated)",
+    assumptionsPriceGrowth: "Avg annual price growth (2026 forecast)",
+    assumptionsMortgageRate: "Mortgage rate (non-resident)",
+    assumptionsMaxLtv: "Max LTV (non-resident)",
 
     months: (n) => n + (n === 1 ? " month" : " months"),
 
@@ -276,7 +297,28 @@ window.TRANSLATIONS = {
 
     aboutTitle: "Despre FlipCalc România",
     aboutText: "FlipCalc este un simulator gratuit, open-source pentru investiții imobiliare fix-and-flip în România. Toate ipotezele sunt preluate din surse oficiale. Acest instrument este doar pentru planificare și nu constituie consiliere financiară, juridică sau de investiții.",
+    aboutHowTitle: "Cum funcționează",
+    aboutHowText: "Introduceți parametrii tranzacției în panoul din stânga. Calculatorul calculează instant costurile realiste — taxe notariale, comisioane agenți, costuri de deținere și impozit pe câștig de capital — și vă arată profitul net, ROI și ROI anual pentru cele trei strategii de finanțare.",
+    aboutSaveTitle: "Salvare și comparare",
+    aboutSaveText: "Denumiți scenariul și apăsați „Salvează". Scenariile salvate sunt stocate în browserul dvs. (localStorage). Accesați pagina Comparație pentru a analiza mai multe scenarii pe patru metrici.",
+    aboutOssTitle: "Open source",
+    aboutOssText: "Acest proiect este complet open source. Codul sursă, ipotezele și metodologia sunt vizibile în repository.",
     disclaimer: "⚠️ Doar pentru planificare. Nu constituie consiliere financiară. Consultați un consilier autorizat.",
+
+    // Assumptions page labels
+    assumptionsTransferTax: "Taxă de transfer (persoană fizică)",
+    assumptionsBankSetup: "Comision deschidere credit",
+    assumptionsUtilities: "Utilități (lunar)",
+    assumptionsPropTax: "Impozit proprietate (lunar)",
+    assumptionsBuildingMaint: "Fond întreținere clădire",
+    assumptionsIndividual: "Persoană fizică (PF) — Codul Fiscal Art. 111",
+    assumptionsCompany: "Firmă / SRL",
+    assumptionsAvgPrice: "Preț mediu/m² (București)",
+    assumptionsRentalYield: "Randament mediu brut închiriere",
+    assumptionsDaysOnMarket: "Zile medii pe piață (renovat)",
+    assumptionsPriceGrowth: "Creștere medie anuală prețuri (prognoză 2026)",
+    assumptionsMortgageRate: "Rata dobânzii (nerezident)",
+    assumptionsMaxLtv: "LTV maxim (nerezident)",
 
     months: (n) => n + (n === 1 ? " lună" : " luni"),
 
@@ -432,7 +474,28 @@ window.TRANSLATIONS = {
 
     aboutTitle: "אודות FlipCalc Romania",
     aboutText: "FlipCalc הוא כלי סימולציה חינמי ופתוח להשקעות נדל\"ן בשוק הרומני. כל ההנחות לקוחות ממקורות רשמיים. הכלי מיועד לתכנון בלבד ואינו מהווה ייעוץ פיננסי, משפטי או השקעות.",
+    aboutHowTitle: "איך זה עובד",
+    aboutHowText: "הזן את פרמטרי העסקה בלוח השמאלי. המחשבון מחשב מיידית עלויות ריאליסטיות — שכר נוטריון, עמלות סוכנים, עלויות החזקה ומס רווח הון — ומציג רווח נקי, ROI ו-ROI שנתי עבור שלוש אסטרטגיות המימון זה לצד זה.",
+    aboutSaveTitle: "שמירה והשוואה",
+    aboutSaveText: "תן שם לתרחיש ולחץ על \"שמור תרחיש\". התרחישים השמורים מאוחסנים בדפדפן שלך (localStorage). עבור לדף ההשוואה לניתוח מספר תרחישים על פי ארבעה מדדים.",
+    aboutOssTitle: "קוד פתוח",
+    aboutOssText: "הפרויקט הזה הוא קוד פתוח לחלוטין. קוד המקור, ההנחות והמתודולוגיה גלויים ב-repository.",
     disclaimer: "⚠️ לתכנון בלבד. אינו ייעוץ פיננסי. יש להתייעץ עם יועץ מורשה לפני כל השקעה.",
+
+    // Assumptions page labels
+    assumptionsTransferTax: "מס העברה (יחיד)",
+    assumptionsBankSetup: "עמלת פתיחת הלוואה",
+    assumptionsUtilities: "חשמל/מים/גז (חודשי)",
+    assumptionsPropTax: "ארנונה (חודשי)",
+    assumptionsBuildingMaint: "ועד בית",
+    assumptionsIndividual: "יחיד (PF) — סעיף 111 לחוק המס",
+    assumptionsCompany: "חברה / SRL",
+    assumptionsAvgPrice: "מחיר ממוצע/מ\"ר (בוקרשט)",
+    assumptionsRentalYield: "תשואת שכירות ברוטו ממוצעת",
+    assumptionsDaysOnMarket: "ימי שיווק ממוצעים (לאחר שיפוץ)",
+    assumptionsPriceGrowth: "עליית מחירים שנתית ממוצעת (תחזית 2026)",
+    assumptionsMortgageRate: "ריבית משכנתא (לא תושב)",
+    assumptionsMaxLtv: "LTV מקסימלי (לא תושב)",
 
     months: (n) => n === 1 ? "חודש אחד" : n + " חודשים",
 
