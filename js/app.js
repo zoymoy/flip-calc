@@ -34,6 +34,9 @@
     if (savedLang && window.TRANSLATIONS[savedLang]) {
       lang = savedLang;
     }
+    // Initialise Firebase (no-op if config is placeholder or SDK unavailable)
+    window.Storage.initFirebase();
+
     // Restore shared scenario from URL hash (#s=<base64>)
     try {
       const hash = window.location.hash;
@@ -46,6 +49,24 @@
         }
       }
     } catch (e) { /* malformed hash — ignore, use defaults */ }
+
+    // Load shared scenario from Firestore (?s=<firestoreDocId>)
+    const _urlParams = new URLSearchParams(window.location.search);
+    const _cloudId = _urlParams.get('s');
+    if (_cloudId) {
+      window.Storage.loadFromCloud(_cloudId).then(data => {
+        if (!data) return;
+        const { savedAt, _firestoreId, name, ...p } = data;
+        params = { ...params, ...p };
+        if (name) {
+          const nameEl = document.getElementById('scenario-name');
+          if (nameEl) nameEl.value = name;
+        }
+        syncControlsToParams();
+        recalc();
+      });
+    }
+
     bindNav();
     bindLang();
     bindControls();
@@ -453,13 +474,20 @@
   }
 
   function shareScenarioByName(name) {
-    const data = window.Storage.load(name);
-    if (!data) return;
-    const { savedAt, ...p } = data;
+    const firestoreId = window.Storage.getFirestoreId(name);
+    const base = window.location.href.split(/[#?]/)[0];
+    let url;
+    if (firestoreId) {
+      // Cloud-synced: use a clean short URL with Firestore doc ID
+      url = base + '?s=' + firestoreId;
+    } else {
+      // Not yet synced: fall back to base64 hash
+      const data = window.Storage.load(name);
+      if (!data) return;
+      const { savedAt, _firestoreId, ...p } = data;
+      url = base + '#s=' + btoa(JSON.stringify({ ...p, _scenarioName: name }));
+    }
     try {
-      const payload = JSON.stringify({ ...p, _scenarioName: name });
-      const encoded = btoa(payload);
-      const url = window.location.href.split('#')[0] + '#s=' + encoded;
       navigator.clipboard.writeText(url).then(() => showToast(t().linkCopied));
     } catch (e) { /* clipboard not available */ }
   }
