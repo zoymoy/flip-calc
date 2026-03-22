@@ -40,6 +40,10 @@
       if (hash.startsWith('#s=')) {
         const decoded = JSON.parse(atob(hash.slice(3)));
         params = { ...params, ...decoded };
+        if (decoded._scenarioName) {
+          const nameEl = document.getElementById('scenario-name');
+          if (nameEl) nameEl.value = decoded._scenarioName;
+        }
       }
     } catch (e) { /* malformed hash — ignore, use defaults */ }
     bindNav();
@@ -448,6 +452,18 @@
     } catch (e) { /* clipboard not available */ }
   }
 
+  function shareScenarioByName(name) {
+    const data = window.Storage.load(name);
+    if (!data) return;
+    const { savedAt, ...p } = data;
+    try {
+      const payload = JSON.stringify({ ...p, _scenarioName: name });
+      const encoded = btoa(payload);
+      const url = window.location.href.split('#')[0] + '#s=' + encoded;
+      navigator.clipboard.writeText(url).then(() => showToast(t().linkCopied));
+    } catch (e) { /* clipboard not available */ }
+  }
+
   function syncControlsToParams() {
     const setRange = (id, val) => {
       const el = document.getElementById(id);
@@ -494,6 +510,7 @@
         </div>
         <div class="saved-item-actions">
           <button class="btn btn-sm" onclick="App.loadScenario('${escHtml(item.name)}')">${tr.loadScenario}</button>
+          <button class="btn btn-sm btn-ghost" onclick="App.shareScenarioByName('${escHtml(item.name)}')">${tr.shareScenario}</button>
           <button class="btn btn-sm btn-ghost btn-danger" onclick="App.deleteScenario('${escHtml(item.name)}')">${tr.deleteScenario}</button>
         </div>
       </div>`;
@@ -638,6 +655,6 @@
   }
 
   // ── Public API (for inline onclick) ───────────────────────────────────────
-  window.App = { loadScenario, deleteScenario };
+  window.App = { loadScenario, deleteScenario, shareScenarioByName };
 
 })();
