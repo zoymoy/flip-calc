@@ -12,7 +12,7 @@ window.Storage = {
   initFirebase() {
     try {
       if (!window._firebaseConfig || window._firebaseConfig.apiKey === 'REPLACE_ME') return;
-      const app = firebase.initializeApp(window._firebaseConfig);
+      const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(window._firebaseConfig);
       this._db = firebase.firestore(app);
     } catch (e) { /* Firebase unavailable — local-only mode */ }
   },
@@ -62,7 +62,7 @@ window.Storage = {
             localStorage.setItem(this.KEY, JSON.stringify(latest));
           }
         })
-        .catch(() => { /* cloud sync failed silently */ });
+        .catch(e => console.warn('[FlipCalc] Firestore sync failed:', e));
     }
   },
 
