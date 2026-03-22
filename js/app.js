@@ -104,10 +104,12 @@
     document.documentElement.dir = tr.dir;
     document.body.classList.toggle('rtl', tr.dir === 'rtl');
 
-    // Text substitution by data-i18n
+    // Text substitution by data-i18n (update text node only, preserving child elements like .tip-icon)
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
-      if (tr[key] !== undefined) el.textContent = tr[key];
+      if (tr[key] === undefined) return;
+      const textNode = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE);
+      if (textNode) { textNode.nodeValue = tr[key]; } else { el.textContent = tr[key]; }
     });
     // Placeholders
     document.querySelectorAll('[data-i18n-ph]').forEach(el => {
@@ -407,7 +409,6 @@
     const tr = t();
     window.Charts.renderROI('chart-roi', results, tr);
     window.Charts.renderCapitalProfit('chart-capital', results, tr);
-    window.Charts.renderWaterfall('chart-waterfall', results.equity, tr);
   }
 
   // ── Scenario Save/Load ────────────────────────────────────────────────────
