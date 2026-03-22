@@ -45,6 +45,7 @@
     bindNav();
     bindLang();
     bindControls();
+    bindTooltips();
     bindScenarioActions();
     applyLang();
     recalc();
@@ -113,6 +114,11 @@
       const key = el.dataset.i18nPh;
       if (tr[key] !== undefined) el.placeholder = tr[key];
     });
+    // Tooltip text (data-i18n-tip → data-tip attribute, read by CSS ::after)
+    document.querySelectorAll('[data-i18n-tip]').forEach(el => {
+      const key = el.dataset.i18nTip;
+      if (tr[key] !== undefined) el.setAttribute('data-tip', tr[key]);
+    });
   }
 
   // ── Controls ───────────────────────────────────────────────────────────────
@@ -150,6 +156,24 @@
     bind('inp-ltv',      'ltvPct',        'range');
     bind('inp-share',    'yourSharePct',  'range');
     bind('inp-mgmt',     'mgmtFeePct',    'range');
+  }
+
+  // ── Tooltip interaction (mobile tap + keyboard dismiss) ────────────────────
+  function bindTooltips() {
+    document.addEventListener('click', function(e) {
+      const icon = e.target.closest('.tip-icon');
+      if (icon) {
+        e.stopPropagation();
+        const isActive = icon.classList.contains('tip-active');
+        document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
+        if (!isActive) icon.classList.add('tip-active');
+        return;
+      }
+      document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
+    });
   }
 
   // ── Recalculate & render ───────────────────────────────────────────────────
@@ -195,22 +219,22 @@
     // Table
     const rows = [
       ['td-lbl', tr.purchasePriceLabel, fmt(r.purchasePrice)],
-      ['td-lbl', tr.notaryFee,          fmt(r.acq.notary)],
-      ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent)],
-      ['td-lbl', tr.landRegistry,       fmt(r.acq.landRegistry)],
-      ['td-lbl', tr.renoLabel,          fmt(r.reno)],
+      ['td-lbl', tr.notaryFee,          fmt(r.acq.notary),               tr.tipNotaryFee],
+      ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
+      ['td-lbl', tr.landRegistry,       fmt(r.acq.landRegistry),         tr.tipLandRegistry],
+      ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
       ['td-lbl', tr.utilityHolding,     fmt(r.holding.utility)],
       ['td-lbl', tr.propTaxHolding,     fmt(r.holding.propTax)],
       ['td-lbl', tr.maintHolding,       fmt(r.holding.maint)],
       ['divider', tr.totalInvestment,   fmt(r.totalInvestment)],
       ['td-lbl', tr.saleProceeds,       fmt(r.arv)],
-      ['td-lbl', tr.sellerAgent,        fmt(r.saleCosts.sellerAgent)],
-      ['td-lbl', tr.sellerNotary,       fmt(r.saleCosts.sellerNotary)],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.cgt)],
-      ['profit', tr.netProfit,          fmt(r.netProfit)],
-      ['roi',    tr.roiOnCapital,       pctPlain(r.roi)],
-      ['roi',    tr.annualROI,          pctPlain(r.annualROI)],
-      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin)],
+      ['td-lbl', tr.sellerAgent,        fmt(r.saleCosts.sellerAgent),    tr.tipSellerAgent],
+      ['td-lbl', tr.sellerNotary,       fmt(r.saleCosts.sellerNotary),   tr.tipSellerNotary],
+      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.cgt),               tr.tipCapitalGainsTax],
+      ['profit', tr.netProfit,          fmt(r.netProfit),                tr.tipNetProfit],
+      ['roi',    tr.roiOnCapital,       pctPlain(r.roi),                 tr.tipRoiOnCapital],
+      ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
+      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
     ];
     document.getElementById('eq-table').innerHTML = buildTableRows(rows);
     document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
@@ -230,14 +254,14 @@
       ['divider', tr.sectionResults,    ''],
       ['td-lbl', tr.netProfit + ' (total)', fmt(r.grossProfit - r.cgt + r.yourCGT - r.yourCGT + (r.cgt - r.yourCGT))],
       ['divider', tr.yourNetProfit,     ''],
-      ['td-lbl', tr.mgmtFeeLabel,       fmt(r.mgmtFee)],
-      ['td-lbl', tr.profitShareLabel,   fmt(r.yourProfitShare)],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.yourCGT)],
-      ['profit-purple', tr.yourNetProfit, fmt(r.yourNetProfit)],
-      ['roi-purple', tr.roiOnCapital,   pctPlain(r.roi)],
-      ['roi-purple', tr.annualROI,      pctPlain(r.annualROI)],
-      ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin)],
-      ['warn',   tr.capitalFreed,       fmt(r.capitalFreed)],
+      ['td-lbl', tr.mgmtFeeLabel,       fmt(r.mgmtFee),                  tr.tipMgmtFeeLabel],
+      ['td-lbl', tr.profitShareLabel,   fmt(r.yourProfitShare),           tr.tipProfitShareLabel],
+      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.yourCGT),           tr.tipCapitalGainsTax],
+      ['profit-purple', tr.yourNetProfit, fmt(r.yourNetProfit),           tr.tipNetProfit],
+      ['roi-purple', tr.roiOnCapital,   pctPlain(r.roi),                 tr.tipRoiOnCapital],
+      ['roi-purple', tr.annualROI,      pctPlain(r.annualROI),           tr.tipAnnualROI],
+      ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),        tr.tipProfitMargin],
+      ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
     ];
     document.getElementById('p-table').innerHTML = buildTableRows(rows);
     document.getElementById('p-col-head')?.classList.toggle('col-head-loss', r.yourNetProfit < 0);
@@ -252,31 +276,31 @@
 
     const rows = [
       ['td-lbl', tr.purchasePriceLabel, fmt(r.purchasePrice)],
-      ['td-lbl', tr.loanAmount,         fmt(r.loanAmount)],
-      ['td-lbl', tr.ownEquity,          fmt(r.ownEquity)],
-      ['td-lbl', tr.notaryFee,          fmt(r.acq.notary)],
-      ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent)],
-      ['td-lbl', tr.bankSetupFee,       fmt(r.acq.bankSetupFee)],
-      ['td-lbl', tr.renoLabel,          fmt(r.reno)],
-      ['td-lbl', tr.holdingCosts,       fmt(r.holding.total)],
+      ['td-lbl', tr.loanAmount,         fmt(r.loanAmount),               tr.tipLoanAmount],
+      ['td-lbl', tr.ownEquity,          fmt(r.ownEquity),                tr.tipOwnEquity],
+      ['td-lbl', tr.notaryFee,          fmt(r.acq.notary),               tr.tipNotaryFee],
+      ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
+      ['td-lbl', tr.bankSetupFee,       fmt(r.acq.bankSetupFee),         tr.tipBankSetupFee],
+      ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
+      ['td-lbl', tr.holdingCosts,       fmt(r.holding.total),            tr.tipHoldingCosts],
       ['divider', tr.totalInvestment,   fmt(r.totalEquityDeployed)],
-      ['td-lbl', tr.loanInterest,       '−' + fmt(r.interest)],
+      ['td-lbl', tr.loanInterest,       '−' + fmt(r.interest),          tr.tipLoanInterest],
       ['td-lbl', tr.saleProceeds,       fmt(r.arv)],
       ['td-lbl', tr.loanRepayment,      '−' + fmt(r.loanAmount)],
-      ['td-lbl', tr.sellerAgent,        '−' + fmt(r.saleCosts.sellerAgent)],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.cgt)],
-      ['profit', tr.netProfit,          fmt(r.netProfit)],
-      ['roi',    tr.roiOnCapital,       pctPlain(r.roi)],
-      ['roi',    tr.annualROI,          pctPlain(r.annualROI)],
-      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin)],
-      ['warn',   tr.capitalFreed,       fmt(r.capitalFreed)],
+      ['td-lbl', tr.sellerAgent,        '−' + fmt(r.saleCosts.sellerAgent), tr.tipSellerAgent],
+      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.cgt),               tr.tipCapitalGainsTax],
+      ['profit', tr.netProfit,          fmt(r.netProfit),                tr.tipNetProfit],
+      ['roi',    tr.roiOnCapital,       pctPlain(r.roi),                 tr.tipRoiOnCapital],
+      ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
+      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
+      ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
     ];
     document.getElementById('ln-table').innerHTML = buildTableRows(rows);
     document.getElementById('ln-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
   function buildTableRows(rows) {
-    return rows.map(([type, label, val]) => {
+    return rows.map(([type, label, val, tipText]) => {
       if (type === 'divider') {
         return `<tr class="divider"><td colspan="2">${label}${val ? ' — ' + val : ''}</td></tr>`;
       }
@@ -289,8 +313,29 @@
         'neg': 'neg-row',
         'td-lbl': '',
       }[type] || '';
-      return `<tr class="${rowClass}"><td class="${type === 'td-lbl' ? 'td-lbl' : ''}">${label}</td><td>${val}</td></tr>`;
+      const tipHtml = tipText
+        ? `<span class="tip-icon" aria-label="${escHtml(tipText)}" data-tip="${escHtml(tipText)}" tabindex="0">ⓘ</span>`
+        : '';
+      return `<tr class="${rowClass}"><td class="${type === 'td-lbl' ? 'td-lbl' : ''}">${label}${tipHtml}</td><td>${val}</td></tr>`;
     }).join('');
+  }
+
+  // ── Tooltip interactions ────────────────────────────────────────────────────
+  function bindTooltips() {
+    document.addEventListener('click', function(e) {
+      const icon = e.target.closest('.tip-icon');
+      if (icon) {
+        e.stopPropagation();
+        const isActive = icon.classList.contains('tip-active');
+        document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
+        if (!isActive) icon.classList.add('tip-active');
+        return;
+      }
+      document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
+    });
   }
 
   // ── Summary sections ───────────────────────────────────────────────────────
