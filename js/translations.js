@@ -378,7 +378,7 @@ window.TRANSLATIONS = {
     aboutHowTitle: "Cum funcționează",
     aboutHowText: "Introduceți parametrii tranzacției în panoul din stânga. Calculatorul calculează instant costurile realiste — taxe notariale, comisioane agenți, costuri de deținere și impozit pe câștig de capital — și vă arată profitul net, ROI și ROI anual pentru cele trei strategii de finanțare.",
     aboutSaveTitle: "Salvare și comparare",
-    aboutSaveText: "Denumiți scenariul și apăsați „Salvează". Scenariile salvate sunt stocate în browserul dvs. (localStorage). Accesați pagina Comparație pentru a analiza mai multe scenarii pe patru metrici.",
+    aboutSaveText: "Denumiți scenariul și apăsați „Salvează”. Scenariile salvate sunt stocate în browserul dvs. (localStorage). Accesați pagina Comparație pentru a analiza mai multe scenarii pe patru metrici.",
     aboutOssTitle: "Open source",
     aboutOssText: "Acest proiect este complet open source. Codul sursă, ipotezele și metodologia sunt vizibile în repository.",
     disclaimer: "⚠️ Doar pentru planificare. Nu constituie consiliere financiară. Consultați un consilier autorizat.",
