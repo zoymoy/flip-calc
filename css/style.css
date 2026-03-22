@@ -736,6 +736,19 @@ body.rtl #split-bar-you + div { order: 1; }
 body.rtl .tip-icon::after  { left: auto; right: 50%; transform: translateX(50%); }
 body.rtl .tip-icon::before { left: auto; right: 50%; transform: translateX(50%); }
 
+/* ── Risk score badge ── */
+.risk-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+.risk-badge.risk-low  { background: #d1fae5; color: #065f46; }
+.risk-badge.risk-med  { background: #fef3c7; color: #92400e; }
+.risk-badge.risk-high { background: #fee2e2; color: #991b1b; }
+
 /* ── Print / PDF ── */
 @media print {
   .topbar, .scenario-bar, #page-scenarios .hero,

@@ -262,6 +262,7 @@
       ['roi',    tr.roiOnCapital,       pctPlain(r.roi),                 tr.tipRoiOnCapital],
       ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
       ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
+      ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
     ];
     document.getElementById('eq-table').innerHTML = buildTableRows(rows);
     document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
@@ -289,6 +290,7 @@
       ['roi-purple', tr.annualROI,      pctPlain(r.annualROI),           tr.tipAnnualROI],
       ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),        tr.tipProfitMargin],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
+      ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
     ];
     document.getElementById('p-table').innerHTML = buildTableRows(rows);
     document.getElementById('p-col-head')?.classList.toggle('col-head-loss', r.yourNetProfit < 0);
@@ -321,6 +323,7 @@
       ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
       ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
+      ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
     ];
     document.getElementById('ln-table').innerHTML = buildTableRows(rows);
     document.getElementById('ln-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
@@ -338,11 +341,16 @@
         'roi-purple': 'roi-row',
         'warn': 'warn-row',
         'neg': 'neg-row',
+        'risk': 'risk-row',
         'td-lbl': '',
       }[type] || '';
       const tipHtml = tipText
         ? `<span class="tip-icon" aria-label="${escHtml(tipText)}" data-tip="${escHtml(tipText)}" tabindex="0">ⓘ</span>`
         : '';
+      if (type === 'risk') {
+        const level = val <= 3 ? 'low' : val <= 6 ? 'med' : 'high';
+        return `<tr class="risk-row"><td>${label}${tipHtml}</td><td><span class="risk-badge risk-${level}">${val} / 10</span></td></tr>`;
+      }
       return `<tr class="${rowClass}"><td class="${type === 'td-lbl' ? 'td-lbl' : ''}">${label}${tipHtml}</td><td>${val}</td></tr>`;
     }).join('');
   }

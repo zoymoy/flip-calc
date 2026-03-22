@@ -172,14 +172,37 @@ window.Calculator = {
   },
 
   /**
+   * Risk score 1–10 for a scenario result.
+   * Factors: profit margin cushion (55%), leverage/obligation (30%), project duration (15%).
+   */
+  calcRiskScore(result, params) {
+    const margin = Math.max(result.profitMargin / 100, 0);
+    const marginRisk = 1 - Math.min(margin / 0.30, 1);
+
+    let leverageFactor;
+    if (result.mode === 'loan') {
+      leverageFactor = 0.40 + (params.ltvPct / 100) * 0.60;
+    } else if (result.mode === 'partnership') {
+      leverageFactor = 0.25;
+    } else {
+      leverageFactor = 0.40;
+    }
+
+    const durationFactor = Math.min(params.projectMonths / 18, 1);
+    const raw = marginRisk * 0.55 + leverageFactor * 0.30 + durationFactor * 0.15;
+    return Math.round(Math.min(Math.max(1 + raw * 9, 1), 10));
+  },
+
+  /**
    * Run all three scenarios and return combined result
    */
   calcAll(params) {
-    return {
-      equity: this.calcEquity(params),
-      partnership: this.calcPartnership(params),
-      loan: this.calcLoan(params),
-      params,
-    };
+    const equity      = this.calcEquity(params);
+    const partnership = this.calcPartnership(params);
+    const loan        = this.calcLoan(params);
+    equity.riskScore      = this.calcRiskScore(equity,      params);
+    partnership.riskScore = this.calcRiskScore(partnership, params);
+    loan.riskScore        = this.calcRiskScore(loan,        params);
+    return { equity, partnership, loan, params };
   }
 };

@@ -119,6 +119,8 @@ window.TRANSLATIONS = {
     tipMgmtFeeLabel:    "Management fee earned by the active partner, deducted from gross profit before the equity split.",
     tipProfitShareLabel:"Your share of profit remaining after the management fee, proportional to your equity percentage.",
     tipCapitalFreed:    "Capital not deployed due to leverage or partnership — available for a second simultaneous deal.",
+    riskScore:          "Risk Score",
+    tipRiskScore:       "Deal risk rated 1–10 based on profit margin cushion, leverage level, and project duration. Higher = riskier.",
 
     // Table headers
     scenario100: "100% Self",
@@ -344,6 +346,8 @@ window.TRANSLATIONS = {
     tipMgmtFeeLabel:    "Comisionul de management câștigat de partenerul activ, dedus din profitul brut înainte de împărțire.",
     tipProfitShareLabel:"Cota ta din profitul rămas după comisionul de management, proporțional cu participarea ta la capital.",
     tipCapitalFreed:    "Capital nealocat datorită efectului de levier sau parteneriatului — disponibil pentru o a doua tranzacție simultană.",
+    riskScore:          "Scor de risc",
+    tipRiskScore:       "Riscul tranzacției notat 1–10, pe baza marjei de profit, gradului de îndatorare și duratei proiectului. Mai mare = mai riscant.",
 
     scenario100: "100% propriu",
     scenarioPartner: "Parteneriat",
@@ -560,6 +564,8 @@ window.TRANSLATIONS = {
     tipMgmtFeeLabel:    "דמי ניהול שהשותף הפעיל מרוויח, מנוכים מהרווח הגולמי לפני חלוקת הרווח.",
     tipProfitShareLabel:"חלקך ברווח שנותר לאחר דמי הניהול, ביחס לאחוז ההון שלך.",
     tipCapitalFreed:    "הון שלא נפרס הודות למינוף או שותפות — זמין לעסקה שנייה במקביל.",
+    riskScore:          "ציון סיכון",
+    tipRiskScore:       "סיכון העסקה בסולם 1–10, בהתבסס על מרווח הרווח, רמת המינוף ומשך הפרויקט. גבוה יותר = מסוכן יותר.",
 
     scenario100: "100% עצמי",
     scenarioPartner: "שותפות",
