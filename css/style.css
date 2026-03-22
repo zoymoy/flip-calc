@@ -361,7 +361,7 @@ input[type=range]::-moz-range-thumb {
 .scenario-col {
   border-radius: var(--r-lg);
   border: 0.5px solid var(--border-md);
-  overflow: hidden;
+  overflow: visible;
   background: #fff;
 }
 .scenario-col-head {
@@ -369,6 +369,8 @@ input[type=range]::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 8px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  overflow: hidden;
 }
 .scenario-col-head.teal { background: var(--teal-light); }
 .scenario-col-head.purple { background: var(--purple-light); }
@@ -657,11 +659,88 @@ body.rtl #split-bar-you + div { order: 1; }
 }
 .scenario-col-head { display: flex; align-items: center; }
 
+/* ── Tooltip icons ── */
+.tip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-inline-start: 4px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-style: normal;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--text-4);
+  background: var(--surface-2);
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+  flex-shrink: 0;
+  user-select: none;
+  line-height: 1;
+}
+.tip-icon:hover, .tip-icon:focus, .tip-icon.tip-active {
+  color: var(--teal);
+  background: var(--teal-light);
+  outline: none;
+}
+/* Bubble */
+.tip-icon::after {
+  content: attr(data-tip);
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+  padding: 7px 10px;
+  border-radius: 7px;
+  width: 220px;
+  white-space: normal;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  transition: opacity 0.15s, visibility 0.15s;
+}
+/* Arrow notch */
+.tip-icon::before {
+  content: '';
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--ink);
+  z-index: 201;
+  transition: opacity 0.15s, visibility 0.15s;
+}
+.tip-icon:hover::after,  .tip-icon:focus::after,  .tip-icon.tip-active::after,
+.tip-icon:hover::before, .tip-icon:focus::before, .tip-icon.tip-active::before {
+  opacity: 1;
+  visibility: visible;
+}
+/* RTL: mirror bubble position */
+body.rtl .tip-icon::after  { left: auto; right: 50%; transform: translateX(50%); }
+body.rtl .tip-icon::before { left: auto; right: 50%; transform: translateX(50%); }
+
 /* ── Print / PDF ── */
 @media print {
   .topbar, .scenario-bar, #page-scenarios .hero,
   .layout-cols > :first-child, .charts-grid,
-  #toast, #saved-list, .col-summary { display: none !important; }
+  #toast, #saved-list, .col-summary, .tip-icon { display: none !important; }
   body { background: #fff; color: #000; }
   .layout-cols { display: block; }
   .results-grid { display: flex; flex-direction: row; gap: 12px; }
