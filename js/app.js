@@ -519,7 +519,7 @@
     if (tax) tax.value = params.taxStructure;
     // Update display
     document.getElementById('inp-price-val').textContent   = fmt(params.purchasePrice);
-    document.getElementById('inp-size-val').textContent    = params.propertySize + ' m²';
+    document.getElementById('inp-size-val').textContent    = params.propertySize + ' sqm';
     document.getElementById('inp-arv-val').textContent     = fmt(params.arv);
     document.getElementById('inp-months-val').textContent  = t().months(params.projectMonths);
     document.getElementById('inp-rate-val').textContent    = params.mortgageRate + '%';

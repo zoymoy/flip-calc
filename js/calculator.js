@@ -173,23 +173,12 @@ window.Calculator = {
 
   /**
    * Risk score 1–10 for a scenario result.
-   * Factors: profit margin cushion (55%), leverage/obligation (30%), project duration (15%).
+   * Factors: capital deployed as % of ARV (70%), project duration (30%). Profit is excluded.
    */
   calcRiskScore(result, params) {
-    const margin = Math.max(result.profitMargin / 100, 0);
-    const marginRisk = 1 - Math.min(margin / 0.30, 1);
-
-    let leverageFactor;
-    if (result.mode === 'loan') {
-      leverageFactor = 0.40 + (params.ltvPct / 100) * 0.60;
-    } else if (result.mode === 'partnership') {
-      leverageFactor = 0.25;
-    } else {
-      leverageFactor = 0.40;
-    }
-
+    const capitalFactor = Math.min(result.capitalRequired / params.arv, 1);
     const durationFactor = Math.min(params.projectMonths / 18, 1);
-    const raw = marginRisk * 0.55 + leverageFactor * 0.30 + durationFactor * 0.15;
+    const raw = capitalFactor * 0.70 + durationFactor * 0.30;
     return Math.round(Math.min(Math.max(1 + raw * 9, 1), 10));
   },
 

@@ -744,6 +744,7 @@ body.rtl .tip-icon::before { left: auto; right: 50%; transform: translateX(50%);
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .risk-badge.risk-low  { background: #d1fae5; color: #065f46; }
 .risk-badge.risk-med  { background: #fef3c7; color: #92400e; }
