@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "apphosting.yaml",
+      "**/.*",
+      "**/node_modules/**",
+      "dataconnect/**",
+      "CLAUDE.md",
+      "README.md"
+    ]
+  }
+}

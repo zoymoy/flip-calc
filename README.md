@@ -16,9 +16,9 @@ A free, open-source web app that helps investors compare three financing strateg
 
 - **3-way side-by-side comparison** with realistic Romanian cost items
 - **Realistic cost model**: notary fees, agent commissions (APAIR), land registry, holding costs, capital gains tax
-- **Save & name scenarios** (stored in browser localStorage)
+- **Save & name scenarios** — synced to Firestore cloud storage; share as a clean `?s=<id>` URL
 - **Multi-scenario comparison** on the Compare page (4 chart metrics)
-- **Visual charts**: ROI bar, Capital vs Profit, Cost Waterfall
+- **Visual charts**: ROI bar, Capital vs Profit
 - **3 languages**: English (default), Romanian, Hebrew (RTL)
 - **Official data sources**: UNNPR, ANAF Fiscal Code, APAIR, INS, BNR, imobiliare.ro
 
