@@ -76,4 +76,35 @@ window.Storage = {
       return { name, ...params, savedAt, _firestoreId: id };
     } catch { return null; }
   },
+
+  // ── Assumptions: localStorage immediately, Firestore in background ─────────
+  loadAssumptions() {
+    try {
+      return JSON.parse(localStorage.getItem('flipcalc_assumptions') || '{}');
+    } catch { return {}; }
+  },
+
+  saveAssumptions(overrides) {
+    localStorage.setItem('flipcalc_assumptions', JSON.stringify(overrides));
+    if (this._db) {
+      this._db.collection('assumptions').doc('overrides').set(overrides)
+        .catch(e => console.warn('[FlipCalc] Assumptions sync failed:', e));
+    }
+  },
+
+  async loadAssumptionsFromCloud() {
+    if (!this._db) return null;
+    try {
+      const doc = await this._db.collection('assumptions').doc('overrides').get();
+      return doc.exists ? doc.data() : null;
+    } catch { return null; }
+  },
+
+  resetAssumptions() {
+    localStorage.removeItem('flipcalc_assumptions');
+    if (this._db) {
+      this._db.collection('assumptions').doc('overrides').delete()
+        .catch(e => console.warn('[FlipCalc] Assumptions reset failed:', e));
+    }
+  },
 };

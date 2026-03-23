@@ -9,7 +9,7 @@
  *    https://www.apair.ro/ — typically 2–3% per side
  *  - Renovation cost/m²: INS (National Institute of Statistics) construction price index
  *    https://insse.ro/cms/ro/content/indicii-preturilor-lucrarilor-de-constructii
- *  - Capital gains tax: Romanian Fiscal Code — 10% flat on profit for individuals
+ *  - Capital gains tax: Romanian Fiscal Code Art. 111 — 3% (≤3 yr) or 1% (>3 yr) for individuals
  *    https://static.anaf.ro/static/10/Anaf/legislatie/Cod_fiscal_norme_2023.pdf
  *  - Mortgage rates: BNR (National Bank of Romania) monthly bulletin
  *    https://www.bnr.ro/Rapoarte-periodice-2504.aspx
@@ -53,10 +53,10 @@ window.ASSUMPTIONS = {
   sellerNotaryPct: 0.15,       // seller pays partial notary on deed (~0.15%)
 
   // CAPITAL GAINS TAX (Romanian Fiscal Code Art. 111)
-  // For individuals: 10% flat on net profit (income minus acquisition cost)
-  // For SRL (company): 16% corporate tax on profit
-  cgtIndividualPct: 10,
-  cgtCompanyPct: 16,
+  // Individuals: 3% if held ≤ 3 years, 1% if held > 3 years
+  cgtIndividualShortPct: 3,       // ≤ 36 months
+  cgtIndividualLongPct:  1,       // > 36 months
+  cgtDurationThresholdMonths: 36,
 
   // FINANCING
   mortgageRateDefault: 6.5,    // BNR + bank margin, Q1 2026 average for non-residents
@@ -130,3 +130,35 @@ window.ASSUMPTIONS = {
     },
   },
 };
+
+// Frozen copy of factory defaults — used by Reset-to-Defaults functionality.
+// Only includes the scalar numeric values that are editable on the Assumptions page.
+window.ASSUMPTION_DEFAULTS = Object.freeze({
+  notaryFeePct:              window.ASSUMPTIONS.notaryFeePct,
+  transferTaxPct:            window.ASSUMPTIONS.transferTaxPct,
+  transferTaxIndividualPct:  window.ASSUMPTIONS.transferTaxIndividualPct,
+  transferTaxThreshold:      window.ASSUMPTIONS.transferTaxThreshold,
+  buyerAgentPct:             window.ASSUMPTIONS.buyerAgentPct,
+  landRegistryFee:           window.ASSUMPTIONS.landRegistryFee,
+  renoLow:                   window.ASSUMPTIONS.renoLow,
+  renoMid:                   window.ASSUMPTIONS.renoMid,
+  renoHigh:                  window.ASSUMPTIONS.renoHigh,
+  utilityMonthly:            window.ASSUMPTIONS.utilityMonthly,
+  propertyTaxMonthly:        window.ASSUMPTIONS.propertyTaxMonthly,
+  buildingMaintMonthly:      window.ASSUMPTIONS.buildingMaintMonthly,
+  sellerAgentPct:            window.ASSUMPTIONS.sellerAgentPct,
+  sellerNotaryPct:           window.ASSUMPTIONS.sellerNotaryPct,
+  cgtIndividualShortPct:     window.ASSUMPTIONS.cgtIndividualShortPct,
+  cgtIndividualLongPct:      window.ASSUMPTIONS.cgtIndividualLongPct,
+  cgtDurationThresholdMonths: window.ASSUMPTIONS.cgtDurationThresholdMonths,
+  mortgageRateDefault:       window.ASSUMPTIONS.mortgageRateDefault,
+  ltvMaxForeigner:           window.ASSUMPTIONS.ltvMaxForeigner,
+  ltvMaxResident:            window.ASSUMPTIONS.ltvMaxResident,
+  bankSetupFeePct:           window.ASSUMPTIONS.bankSetupFeePct,
+  mortgageInsurancePct:      window.ASSUMPTIONS.mortgageInsurancePct,
+  mgmtFeeDefault:            window.ASSUMPTIONS.mgmtFeeDefault,
+  avgPricePerSqmBucharest:   window.ASSUMPTIONS.avgPricePerSqmBucharest,
+  avgRentalYieldBucharest:   window.ASSUMPTIONS.avgRentalYieldBucharest,
+  avgDaysOnMarket:           window.ASSUMPTIONS.avgDaysOnMarket,
+  avgPriceGrowthAnnual:      window.ASSUMPTIONS.avgPriceGrowthAnnual,
+});

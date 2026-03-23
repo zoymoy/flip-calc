@@ -35,8 +35,25 @@
     if (savedLang && window.TRANSLATIONS[savedLang]) {
       lang = savedLang;
     }
+
+    // Apply localStorage assumption overrides immediately (sync, fast)
+    const localOverrides = window.Storage.loadAssumptions();
+    if (Object.keys(localOverrides).length) {
+      Object.assign(window.ASSUMPTIONS, localOverrides);
+    }
+
     // Initialise Firebase (no-op if config is placeholder or SDK unavailable)
     window.Storage.initFirebase();
+
+    // After Firebase is ready, also pull Firestore assumption overrides (async)
+    window.Storage.loadAssumptionsFromCloud().then(cloudOverrides => {
+      if (!cloudOverrides || !Object.keys(cloudOverrides).length) return;
+      Object.assign(window.ASSUMPTIONS, cloudOverrides);
+      // Keep localStorage in sync with cloud
+      localStorage.setItem('flipcalc_assumptions', JSON.stringify(cloudOverrides));
+      recalc();
+      if (currentPage === 'assumptions') renderAssumptionsPage();
+    });
 
     // Restore shared scenario from URL hash (#s=<base64>)
     try {
@@ -165,6 +182,7 @@
         if (disp) {
           if (key === 'projectMonths') disp.textContent = t().months(params[key]);
           else if (['ltvPct','yourSharePct','mgmtFeePct','mortgageRate'].includes(key)) disp.textContent = params[key] + '%';
+          else if (key === 'propertySize') disp.textContent = params[key] + ' m²';
           else disp.textContent = fmt(params[key]);
         }
         // Show/hide custom reno
@@ -478,6 +496,7 @@
     document.getElementById('btn-new')?.addEventListener('click', newScenario);
     document.getElementById('btn-share')?.addEventListener('click', shareScenario);
     document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+    document.getElementById('btn-reset-assumptions')?.addEventListener('click', resetAssumptions);
   }
 
   function saveScenario() {
@@ -650,61 +669,126 @@
   }
 
   // ── Assumptions page ───────────────────────────────────────────────────────
+  const EDITABLE_ASSUMPTION_KEYS = [
+    'notaryFeePct','buyerAgentPct','landRegistryFee','transferTaxIndividualPct','bankSetupFeePct',
+    'renoLow','renoMid','renoHigh',
+    'utilityMonthly','propertyTaxMonthly','buildingMaintMonthly',
+    'sellerAgentPct','sellerNotaryPct',
+    'cgtIndividualShortPct','cgtIndividualLongPct',
+    'avgPricePerSqmBucharest','avgRentalYieldBucharest','avgDaysOnMarket',
+    'avgPriceGrowthAnnual','mortgageRateDefault','ltvMaxForeigner',
+  ];
+
   function renderAssumptionsPage() {
     const A = window.ASSUMPTIONS;
+    const D = window.ASSUMPTION_DEFAULTS;
     const tr = t();
 
-    const row = (k, v) => `<div class="assumption-item"><span class="assumption-key">${k}</span><span class="assumption-val">${v}</span></div>`;
+    // Editable input row: label | [unit] <input> [unit]
+    const erow = (label, key, unitBefore, unitAfter, step) => {
+      const val = A[key];
+      const isModified = D && val !== D[key];
+      return `<div class="assumption-item">
+        <span class="assumption-key">${label}</span>
+        <span class="assumption-val-wrap">
+          ${unitBefore ? `<span class="assumption-unit">${unitBefore}</span>` : ''}
+          <input type="number"
+                 class="assumption-input${isModified ? ' assumption-modified' : ''}"
+                 id="asmp-${key}"
+                 data-asmp-key="${key}"
+                 value="${val}"
+                 step="${step !== undefined ? step : 'any'}">
+          ${unitAfter ? `<span class="assumption-unit">${unitAfter}</span>` : ''}
+        </span>
+      </div>`;
+    };
 
     const acqEl = document.getElementById('assumptions-acq');
     if (acqEl) acqEl.innerHTML = [
-      [tr.notaryFee,              A.notaryFeePct + '% of purchase'],
-      [tr.buyerAgent,             A.buyerAgentPct + '% (APAIR)'],
-      [tr.landRegistry,           '€' + A.landRegistryFee + ' (OCPI)'],
-      [tr.assumptionsTransferTax, A.transferTaxIndividualPct + '% above €' + A.transferTaxThreshold.toLocaleString()],
-      [tr.assumptionsBankSetup,   A.bankSetupFeePct + '% of loan'],
-    ].map(([k, v]) => row(k, v)).join('');
+      erow(tr.notaryFee,              'notaryFeePct',            '', '%', 0.01),
+      erow(tr.buyerAgent,             'buyerAgentPct',           '', '%', 0.1),
+      erow(tr.landRegistry,           'landRegistryFee',         '€', '', 50),
+      erow(tr.assumptionsTransferTax, 'transferTaxIndividualPct','', '%', 0.1),
+      erow(tr.assumptionsBankSetup,   'bankSetupFeePct',         '', '%', 0.1),
+    ].join('');
 
     const renoEl = document.getElementById('assumptions-reno');
     if (renoEl) renoEl.innerHTML = [
-      [tr.renoLow,  '€' + A.renoLow  + '/m²'],
-      [tr.renoMid,  '€' + A.renoMid  + '/m²'],
-      [tr.renoHigh, '€' + A.renoHigh + '/m²'],
-    ].map(([k, v]) => row(k, v)).join('');
+      erow(tr.renoLow,  'renoLow',  '€', '/m²', 10),
+      erow(tr.renoMid,  'renoMid',  '€', '/m²', 10),
+      erow(tr.renoHigh, 'renoHigh', '€', '/m²', 10),
+    ].join('');
 
     const holdEl = document.getElementById('assumptions-hold');
     if (holdEl) holdEl.innerHTML = [
-      [tr.assumptionsUtilities,    '€' + A.utilityMonthly],
-      [tr.assumptionsPropTax,      '€' + A.propertyTaxMonthly],
-      [tr.assumptionsBuildingMaint,'€' + A.buildingMaintMonthly],
-    ].map(([k, v]) => row(k, v)).join('');
+      erow(tr.assumptionsUtilities,    'utilityMonthly',       '€', '/mo', 5),
+      erow(tr.assumptionsPropTax,      'propertyTaxMonthly',   '€', '/mo', 5),
+      erow(tr.assumptionsBuildingMaint,'buildingMaintMonthly', '€', '/mo', 5),
+    ].join('');
 
     const saleEl = document.getElementById('assumptions-sale');
     if (saleEl) saleEl.innerHTML = [
-      [tr.sellerAgent,  A.sellerAgentPct + '% (APAIR)'],
-      [tr.sellerNotary, A.sellerNotaryPct + '% of sale price'],
-    ].map(([k, v]) => row(k, v)).join('');
+      erow(tr.sellerAgent,  'sellerAgentPct',  '', '%', 0.1),
+      erow(tr.sellerNotary, 'sellerNotaryPct', '', '%', 0.01),
+    ].join('');
 
     const taxEl = document.getElementById('assumptions-tax');
     if (taxEl) taxEl.innerHTML = [
-      [tr.assumptionsIndividual, A.cgtIndividualPct + '% flat on profit'],
-      [tr.assumptionsCompany,    A.cgtCompanyPct + '% corporate tax'],
-    ].map(([k, v]) => row(k, v)).join('');
+      erow(tr.assumptionsIndividual,     'cgtIndividualShortPct', '', '%', 0.1),
+      erow(tr.assumptionsIndividualLong, 'cgtIndividualLongPct',  '', '%', 0.1),
+    ].join('');
 
     const mktEl = document.getElementById('assumptions-market');
     if (mktEl) mktEl.innerHTML = [
-      [tr.assumptionsAvgPrice,      '€' + A.avgPricePerSqmBucharest],
-      [tr.assumptionsRentalYield,   A.avgRentalYieldBucharest + '%'],
-      [tr.assumptionsDaysOnMarket,  A.avgDaysOnMarket + ' days'],
-      [tr.assumptionsPriceGrowth,   A.avgPriceGrowthAnnual + '%'],
-      [tr.assumptionsMortgageRate,  A.mortgageRateDefault + '%'],
-      [tr.assumptionsMaxLtv,        A.ltvMaxForeigner + '%'],
-    ].map(([k, v]) => row(k, v)).join('');
+      erow(tr.assumptionsAvgPrice,     'avgPricePerSqmBucharest', '€', '/m²', 10),
+      erow(tr.assumptionsRentalYield,  'avgRentalYieldBucharest', '', '%',    0.1),
+      erow(tr.assumptionsDaysOnMarket, 'avgDaysOnMarket',          '', ' days', 1),
+      erow(tr.assumptionsPriceGrowth,  'avgPriceGrowthAnnual',     '', '%',    0.1),
+      erow(tr.assumptionsMortgageRate, 'mortgageRateDefault',      '', '%',    0.25),
+      erow(tr.assumptionsMaxLtv,       'ltvMaxForeigner',          '', '%',    5),
+    ].join('');
 
     const srcEl = document.getElementById('assumptions-sources');
     if (srcEl) srcEl.innerHTML = A.sources.map(s =>
       `<div class="source-item">↗ <a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></div>`
     ).join('');
+
+    bindAssumptionInputs();
+  }
+
+  function bindAssumptionInputs() {
+    document.querySelectorAll('[data-asmp-key]').forEach(input => {
+      input.addEventListener('change', () => {
+        const key = input.dataset.asmpKey;
+        const val = parseFloat(input.value);
+        if (isNaN(val)) { input.value = window.ASSUMPTIONS[key]; return; }
+        window.ASSUMPTIONS[key] = val;
+        const D = window.ASSUMPTION_DEFAULTS;
+        input.classList.toggle('assumption-modified', D ? val !== D[key] : false);
+        saveCurrentOverrides();
+        recalc();
+      });
+    });
+  }
+
+  function saveCurrentOverrides() {
+    const D = window.ASSUMPTION_DEFAULTS;
+    if (!D) { window.Storage.saveAssumptions({}); return; }
+    const overrides = {};
+    EDITABLE_ASSUMPTION_KEYS.forEach(k => {
+      if (window.ASSUMPTIONS[k] !== D[k]) overrides[k] = window.ASSUMPTIONS[k];
+    });
+    window.Storage.saveAssumptions(overrides);
+  }
+
+  function resetAssumptions() {
+    if (!confirm(t().confirmResetAssumptions)) return;
+    const D = window.ASSUMPTION_DEFAULTS;
+    if (D) Object.assign(window.ASSUMPTIONS, D);
+    window.Storage.resetAssumptions();
+    renderAssumptionsPage();
+    recalc();
+    showToast(t().assumptionsReset);
   }
 
   // ── Guide page ─────────────────────────────────────────────────────────────

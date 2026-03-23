@@ -477,10 +477,36 @@ body.rtl .cost-table td:last-child { text-align: left; }
 /* ── Assumptions page ── */
 .assumptions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 @media (max-width: 680px) { .assumptions-grid { grid-template-columns: 1fr; } }
-.assumption-item { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+.assumption-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
 .assumption-item:last-child { border-bottom: none; }
 .assumption-key { color: var(--text-3); }
 .assumption-val { font-family: var(--font-mono); font-weight: 500; color: var(--text); }
+.assumption-val-wrap { display: flex; align-items: center; gap: 4px; }
+.assumption-unit { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+.assumption-input {
+  width: 82px;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: right;
+  transition: border-color 0.15s;
+}
+.assumption-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(83,74,183,0.15); }
+.assumption-input.assumption-modified { border-color: var(--amber); background: #fffbeb; }
+.assumptions-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 12px;
+  margin-bottom: 4px;
+  gap: 12px;
+}
+.assumptions-edit-hint { font-size: 0.8rem; color: var(--muted); font-style: italic; flex: 1; }
 .source-list { margin-top: 1rem; }
 .source-item { font-size: 12px; padding: 6px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
 .source-item a { color: var(--blue); text-decoration: none; }

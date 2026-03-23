@@ -61,12 +61,15 @@ window.Calculator = {
 
   /**
    * Calculate capital gains tax
-   * Romanian Fiscal Code: 10% individual, 16% company
+   * Romanian Fiscal Code Art. 111: 3% if sold ≤ 3 years, 1% if sold > 3 years
    */
-  calcCGT(grossProfit, taxStructure) {
+  calcCGT(grossProfit, projectMonths) {
     const A = window.ASSUMPTIONS;
     if (grossProfit <= 0) return 0;
-    const rate = taxStructure === 'company' ? A.cgtCompanyPct : A.cgtIndividualPct;
+    const threshold = A.cgtDurationThresholdMonths || 36;
+    const rate = (projectMonths || 0) > threshold
+      ? A.cgtIndividualLongPct   // > 3 years → 1%
+      : A.cgtIndividualShortPct; // ≤ 3 years → 3%
     return Math.round(grossProfit * rate / 100);
   },
 
@@ -81,7 +84,7 @@ window.Calculator = {
 
     const totalInvestment = params.purchasePrice + acq.total + renoObj.total + holding.total;
     const grossProfit = params.arv - totalInvestment - saleCosts.total;
-    const cgt = this.calcCGT(grossProfit, params.taxStructure);
+    const cgt = this.calcCGT(grossProfit, params.projectMonths);
     const netProfit = grossProfit - cgt;
 
     const roi = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
@@ -116,7 +119,7 @@ window.Calculator = {
     const profitAfterMgmt = base.grossProfit - mgmtFee;
     const yourProfitShare = Math.round(profitAfterMgmt * yourShare);
     const yourGrossProfit = mgmtFee + yourProfitShare;
-    const yourCGT = this.calcCGT(yourGrossProfit, params.taxStructure);
+    const yourCGT = this.calcCGT(yourGrossProfit, params.projectMonths);
     const yourNetProfit = yourGrossProfit - yourCGT;
 
     const roi = yourCapital > 0 ? (yourNetProfit / yourCapital) * 100 : 0;
@@ -159,7 +162,7 @@ window.Calculator = {
     const totalEquityDeployed = ownEquity + renoObj.total + acq.total + holding.total;
     // gross profit: arv minus everything paid out of pocket (equity + interest + sale costs)
     const grossProfit = params.arv - loanAmount - renoObj.total - acq.total - holding.total - interest - saleCosts.total - ownEquity;
-    const cgt = this.calcCGT(grossProfit, params.taxStructure);
+    const cgt = this.calcCGT(grossProfit, params.projectMonths);
     const netProfit = grossProfit - cgt;
 
     const roi = totalEquityDeployed > 0 ? (netProfit / totalEquityDeployed) * 100 : 0;

@@ -73,7 +73,7 @@
 
           <div class="field">
             <div class="range-row"><span class="range-label" data-i18n="purchasePrice">Purchase Price (€)<span class="tip-icon" data-i18n-tip="tipPurchasePrice" tabindex="0">ⓘ</span></span><span class="range-val" id="inp-price-val">€80,000</span></div>
-            <input type="range" id="inp-price" min="30000" max="200000" step="5000" value="80000">
+            <input type="range" id="inp-price" min="40000" max="140000" step="1000" value="80000">
           </div>
 
           <div class="field">
@@ -109,8 +109,7 @@
           <div class="field">
             <label data-i18n="taxStructure">Tax Structure<span class="tip-icon" data-i18n-tip="tipTaxStructure" tabindex="0">ⓘ</span></label>
             <select id="inp-tax">
-              <option value="individual" data-i18n="taxIndividual">Individual (10% CGT)</option>
-              <option value="company"    data-i18n="taxCompany">Company/SRL (16%)</option>
+              <option value="individual" data-i18n="taxIndividual">Individual (1% / 3% CGT)</option>
             </select>
           </div>
 
@@ -331,6 +330,10 @@
     </div>
   </div>
   <div class="content">
+    <div class="assumptions-toolbar">
+      <span class="assumptions-edit-hint" data-i18n="assumptionsEditHint">Values are editable — changes apply instantly and are saved to the database.</span>
+      <button class="btn btn-ghost btn-sm" id="btn-reset-assumptions" data-i18n="resetToDefaults">Reset to Defaults</button>
+    </div>
     <div class="assumptions-grid">
       <div class="card">
         <div class="card-section" data-i18n="assumptionsCostSection">Acquisition Costs</div>
