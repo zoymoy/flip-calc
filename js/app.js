@@ -16,6 +16,7 @@
     arv: 150000,
     projectMonths: 9,
     taxStructure: 'individual',
+    buildingEra: '1978',
     mortgageRate: 6.5,
     ltvPct: 70,
     yourSharePct: 50,
@@ -102,6 +103,7 @@
     document.getElementById('topbar-nav')?.classList.remove('open');
     if (page === 'compare') renderComparePage();
     if (page === 'assumptions') renderAssumptionsPage();
+    if (page === 'guide') renderGuidePage();
   }
 
   // ── Language ───────────────────────────────────────────────────────────────
@@ -119,6 +121,7 @@
         renderSavedList();
         if (currentPage === 'compare') renderComparePage();
         if (currentPage === 'assumptions') renderAssumptionsPage();
+        if (currentPage === 'guide') renderGuidePage();
       });
     });
   }
@@ -179,6 +182,7 @@
     bind('inp-reno-q',   'renoQuality',   'select');
     bind('inp-reno-custom','renoCustomAmt','number');
     bind('inp-tax',      'taxStructure',  'select');
+    bind('inp-era',      'buildingEra',   'select');
     bind('inp-rate',     'mortgageRate',  'range');
     bind('inp-ltv',      'ltvPct',        'range');
     bind('inp-share',    'yourSharePct',  'range');
@@ -210,6 +214,7 @@
     renderSummaries(results);
     renderCharts(results);
     updateSplitBar();
+    updateEraBadge(results.eraInfo);
     // ARV loss warning
     const warn = document.getElementById('arv-warning');
     if (warn) {
@@ -219,6 +224,22 @@
     }
   }
 
+  function seismicCssClass(seismicClass) {
+    // Map seismic class string to a CSS-safe key
+    if (seismicClass.includes('IV')) return 'rs4';
+    if (seismicClass.includes('II') && seismicClass.includes('III')) return 'rs23';
+    if (seismicClass.includes('III')) return 'rs3';
+    if (seismicClass.includes('II')) return 'rs2';
+    return 'rs1';
+  }
+
+  function updateEraBadge(eraInfo) {
+    const badge = document.getElementById('era-seismic-badge');
+    if (!badge) return;
+    badge.textContent = eraInfo.seismicClass;
+    badge.className = 'era-badge era-' + seismicCssClass(eraInfo.seismicClass);
+  }
+
   function updateSplitBar() {
     const bar = document.getElementById('split-bar-you');
     if (bar) bar.style.width = params.yourSharePct + '%';
@@ -226,16 +247,16 @@
 
   // ── Render results tables ──────────────────────────────────────────────────
   function renderResults(results) {
-    renderEquity(results.equity);
-    renderPartnership(results.partnership);
-    renderLoan(results.loan);
+    renderEquity(results.equity, results.eraInfo);
+    renderPartnership(results.partnership, results.eraInfo);
+    renderLoan(results.loan, results.eraInfo);
   }
 
   function metricHTML(label, value, cls) {
     return `<div class="col-metric"><div class="col-metric-lbl">${label}</div><div class="col-metric-val ${cls || ''}">${value}</div></div>`;
   }
 
-  function renderEquity(r) {
+  function renderEquity(r, eraInfo) {
     const tr = t();
     // Metrics
     document.getElementById('eq-metric-capital').textContent = fmt(r.capitalRequired);
@@ -250,6 +271,7 @@
       ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
       ['td-lbl', tr.landRegistry,       fmt(r.acq.landRegistry),         tr.tipLandRegistry],
       ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
+      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
       ['td-lbl', tr.utilityHolding,     fmt(r.holding.utility)],
       ['td-lbl', tr.propTaxHolding,     fmt(r.holding.propTax)],
       ['td-lbl', tr.maintHolding,       fmt(r.holding.maint)],
@@ -263,12 +285,12 @@
       ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
       ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
       ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
-    ];
+    ].filter(Boolean);
     document.getElementById('eq-table').innerHTML = buildTableRows(rows);
     document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
-  function renderPartnership(r) {
+  function renderPartnership(r, eraInfo) {
     const tr = t();
     document.getElementById('p-metric-capital').textContent = fmt(r.capitalRequired);
     document.getElementById('p-metric-profit').textContent  = fmt(r.yourNetProfit);
@@ -277,6 +299,7 @@
 
     const rows = [
       ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
+      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
       ['td-lbl', tr.yourCapital + ' (' + Math.round(r.yourShare*100) + '%)', fmt(r.yourCapital)],
       ['td-lbl', tr.partnerCapital,     fmt(r.partnerCapital)],
       ['divider', tr.sectionResults,    ''],
@@ -291,12 +314,12 @@
       ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),        tr.tipProfitMargin],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
       ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
-    ];
+    ].filter(Boolean);
     document.getElementById('p-table').innerHTML = buildTableRows(rows);
     document.getElementById('p-col-head')?.classList.toggle('col-head-loss', r.yourNetProfit < 0);
   }
 
-  function renderLoan(r) {
+  function renderLoan(r, eraInfo) {
     const tr = t();
     document.getElementById('ln-metric-capital').textContent = fmt(r.capitalRequired);
     document.getElementById('ln-metric-profit').textContent  = fmt(r.netProfit);
@@ -304,6 +327,7 @@
     document.getElementById('ln-metric-annroi').textContent  = pctPlain(r.annualROI);
 
     const rows = [
+      eraInfo && !eraInfo.mortgageEligible && ['fullwarn', tr.noMortgageWarning],
       ['td-lbl', tr.purchasePriceLabel, fmt(r.purchasePrice)],
       ['td-lbl', tr.loanAmount,         fmt(r.loanAmount),               tr.tipLoanAmount],
       ['td-lbl', tr.ownEquity,          fmt(r.ownEquity),                tr.tipOwnEquity],
@@ -311,6 +335,7 @@
       ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
       ['td-lbl', tr.bankSetupFee,       fmt(r.acq.bankSetupFee),         tr.tipBankSetupFee],
       ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
+      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
       ['td-lbl', tr.holdingCosts,       fmt(r.holding.total),            tr.tipHoldingCosts],
       ['divider', tr.totalInvestment,   fmt(r.totalEquityDeployed)],
       ['td-lbl', tr.loanInterest,       '−' + fmt(r.interest),          tr.tipLoanInterest],
@@ -324,7 +349,7 @@
       ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
       ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
-    ];
+    ].filter(Boolean);
     document.getElementById('ln-table').innerHTML = buildTableRows(rows);
     document.getElementById('ln-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
@@ -333,6 +358,9 @@
     return rows.map(([type, label, val, tipText]) => {
       if (type === 'divider') {
         return `<tr class="divider"><td colspan="2">${label}${val ? ' — ' + val : ''}</td></tr>`;
+      }
+      if (type === 'fullwarn') {
+        return `<tr class="fullwarn-row"><td colspan="2">${label}</td></tr>`;
       }
       const rowClass = {
         'profit': 'profit-row',
@@ -466,7 +494,7 @@
     params = {
       purchasePrice: 80000, propertySize: 60, renoQuality: 'mid',
       renoCustomAmt: 30000, arv: 150000, projectMonths: 9,
-      taxStructure: 'individual', mortgageRate: 6.5, ltvPct: 70,
+      taxStructure: 'individual', buildingEra: '1978', mortgageRate: 6.5, ltvPct: 70,
       yourSharePct: 50, mgmtFeePct: 5,
     };
     syncControlsToParams();
@@ -517,6 +545,8 @@
     if (rq) rq.value = params.renoQuality;
     const tax = document.getElementById('inp-tax');
     if (tax) tax.value = params.taxStructure;
+    const era = document.getElementById('inp-era');
+    if (era) era.value = params.buildingEra || '1978';
     // Update display
     document.getElementById('inp-price-val').textContent   = fmt(params.purchasePrice);
     document.getElementById('inp-size-val').textContent    = params.propertySize + ' sqm';
@@ -675,6 +705,88 @@
     if (srcEl) srcEl.innerHTML = A.sources.map(s =>
       `<div class="source-item">↗ <a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></div>`
     ).join('');
+  }
+
+  // ── Guide page ─────────────────────────────────────────────────────────────
+  function renderGuidePage() {
+    const A = window.ASSUMPTIONS;
+    const tr = t();
+
+    const eraKeys = ['pre1940', '1940', '1963', '1978', '1990', '2000'];
+    const eraLabels = {
+      pre1940: tr.eraPre1940, '1940': tr.era1940, '1963': tr.era1963,
+      '1978': tr.era1978, '1990': tr.era1990, '2000': tr.era2000,
+    };
+
+    // Era reference table
+    const tableEl = document.getElementById('guide-era-table');
+    if (tableEl) {
+      const headerCells = [
+        tr.guideColEra, tr.guideColSeismic, tr.guideColPriceDiscount,
+        tr.guideColHiddenReno, tr.guideColMortgage, tr.guideColInsurance,
+      ].map(h => `<th>${h}</th>`).join('');
+
+      const dataRows = eraKeys.map(key => {
+        const era = A.BUILDING_ERAS[key];
+        const seismicBadge = `<span class="era-badge era-${seismicCssClass(era.seismicClass)}">${era.seismicClass}</span>`;
+        const discount = era.priceDiscountPct > 0 ? `+${era.priceDiscountPct}%` : `${era.priceDiscountPct}%`;
+        const hiddenReno = era.renoHiddenCost > 0 ? `€${era.renoHiddenCost.toLocaleString()}` : '—';
+        const mortgageBadge = era.mortgageEligible
+          ? `<span class="guide-status guide-yes">${tr.guideEligible}</span>`
+          : `<span class="guide-status guide-no">${tr.guideNotEligible}</span>`;
+        const insuranceBadge = era.insurable
+          ? `<span class="guide-status guide-yes">${tr.guideEligible}</span>`
+          : `<span class="guide-status guide-no">${tr.guideNotEligible}</span>`;
+        return `<tr>
+          <td class="guide-era-label">${eraLabels[key] || key}</td>
+          <td>${seismicBadge}</td>
+          <td class="${era.priceDiscountPct > 0 ? 'guide-positive' : 'guide-negative'}">${discount}</td>
+          <td>${hiddenReno}</td>
+          <td>${mortgageBadge}</td>
+          <td>${insuranceBadge}</td>
+        </tr>`;
+      }).join('');
+
+      tableEl.innerHTML = `<div class="guide-table-wrap"><table class="guide-table">
+        <thead><tr>${headerCells}</tr></thead>
+        <tbody>${dataRows}</tbody>
+      </table></div>`;
+    }
+
+    // Seismic explanations
+    const seismicEl = document.getElementById('guide-seismic');
+    if (seismicEl) {
+      seismicEl.innerHTML = [
+        ['Rs I',    'guide-rs1', tr.guideSeismicRs1],
+        ['Rs II',   'guide-rs2', tr.guideSeismicRs2],
+        ['Rs III',  'guide-rs3', tr.guideSeismicRs3],
+        ['Rs IV',   'guide-rs4', tr.guideSeismicRs4],
+      ].map(([cls, cssCls, text]) =>
+        `<div class="guide-seismic-item">
+          <span class="era-badge era-${seismicCssClass(cls)}">${cls}</span>
+          <span>${text}</span>
+        </div>`
+      ).join('');
+    }
+
+    // How to use
+    const howEl = document.getElementById('guide-how-to-use');
+    if (howEl) howEl.innerHTML = `<p>${tr.guideHowToUseText}</p>`;
+
+    // Mortgage note
+    const mortgageEl = document.getElementById('guide-mortgage-note');
+    if (mortgageEl) mortgageEl.innerHTML = `<p>${tr.guideMortgageNoteText}</p>`;
+
+    // Sources
+    const srcEl = document.getElementById('guide-sources');
+    if (srcEl) {
+      const seismicSources = A.sources.filter(s =>
+        s.name.includes('MDLPA') || s.name.includes('Harta') || s.name.includes('imobiliare')
+      );
+      srcEl.innerHTML = seismicSources.map(s =>
+        `<div class="source-item">↗ <a href="${s.url}" target="_blank" rel="noopener">${s.name}</a></div>`
+      ).join('');
+    }
   }
 
   // ── Toast ──────────────────────────────────────────────────────────────────

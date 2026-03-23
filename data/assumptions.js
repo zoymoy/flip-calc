@@ -25,7 +25,9 @@ window.ASSUMPTIONS = {
     { name: "APAIR – Real Estate Agents Association", url: "https://www.apair.ro/" },
     { name: "INS – Construction Price Index", url: "https://insse.ro/cms/ro/content/indicii-preturilor-lucrarilor-de-constructii" },
     { name: "BNR – National Bank of Romania", url: "https://www.bnr.ro/Rapoarte-periodice-2504.aspx" },
-    { name: "imobiliare.ro Market Report 2026", url: "https://www.imobiliare.ro/stiri/" }
+    { name: "imobiliare.ro Market Report 2026", url: "https://www.imobiliare.ro/stiri/" },
+    { name: "MDLPA – Risc Seismic România", url: "https://www.mdlpa.ro/" },
+    { name: "Harta Blocuri – Clase Risc Seismic", url: "https://www.hartablocuri.ro/" },
   ],
 
   // ACQUISITION COSTS
@@ -71,4 +73,60 @@ window.ASSUMPTIONS = {
   avgRentalYieldBucharest: 6.2,    // % gross rental yield
   avgDaysOnMarket: 55,             // days to sell renovated property
   avgPriceGrowthAnnual: 8.0,       // % YoY price growth (2025 actuals, 2026 forecast)
+
+  // BUILDING ERA DATA (Romania — seismic risk & pricing)
+  // Sources: MDLPA risc seismic, Harta Blocuri, Investropa 2026, Cloud9Residence reno costs
+  // priceDiscountPct: vs. Bucharest average (negative = discount, positive = premium)
+  // renoHiddenCost: additional hidden renovation costs on top of standard budget (€)
+  // riskBonus: added to calculated 1-10 risk score (can be negative for new builds)
+  BUILDING_ERAS: {
+    'pre1940': {
+      seismicClass: 'Rs I',
+      priceDiscountPct: -17.5,  // -15% to -20% vs. avg — no seismic design, heritage issues
+      renoHiddenCost: 30000,    // €20k–€40k — rewiring, plumbing overhaul, structural surprises
+      mortgageEligible: false,  // Romanian banks reject Rs I as collateral
+      insurable: false,         // Excluded from mandatory PAD insurance
+      riskBonus: 3,
+    },
+    '1940': {
+      seismicClass: 'Rs I',
+      priceDiscountPct: -13.5,  // -12% to -15%
+      renoHiddenCost: 27500,    // €20k–€35k
+      mortgageEligible: false,
+      insurable: false,
+      riskBonus: 3,
+    },
+    '1963': {
+      seismicClass: 'Rs II–III',
+      priceDiscountPct: -9,     // -8% to -10%
+      renoHiddenCost: 15000,    // €10k–€20k
+      mortgageEligible: true,   // possible but lender-dependent
+      insurable: true,
+      riskBonus: 2,
+    },
+    '1978': {
+      seismicClass: 'Rs II–III',
+      priceDiscountPct: -9,     // -8% to -10% — post-1977 earthquake code, but austerity quality
+      renoHiddenCost: 10000,    // €5k–€15k
+      mortgageEligible: true,
+      insurable: true,
+      riskBonus: 1,
+    },
+    '1990': {
+      seismicClass: 'Rs III',
+      priceDiscountPct: -4,     // -3% to -5%
+      renoHiddenCost: 2500,     // €0–€5k
+      mortgageEligible: true,
+      insurable: true,
+      riskBonus: 0,
+    },
+    '2000': {
+      seismicClass: 'Rs IV',
+      priceDiscountPct: 13.5,   // +12% to +15% premium vs. avg
+      renoHiddenCost: 0,
+      mortgageEligible: true,
+      insurable: true,
+      riskBonus: -1,            // modern build reduces overall deal risk slightly
+    },
+  },
 };

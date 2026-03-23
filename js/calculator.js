@@ -6,13 +6,23 @@
 window.Calculator = {
 
   /**
-   * Calculate renovation cost based on quality preset or custom value
+   * Calculate renovation cost based on quality preset or custom value.
+   * Returns { base, hidden, total } where hidden is an era-based add-on.
+   * Hidden cost only applies to preset tiers — custom amounts are assumed to already
+   * account for building-specific issues.
    */
   calcReno(params) {
     const A = window.ASSUMPTIONS;
-    if (params.renoQuality === 'custom') return params.renoCustomAmt || 0;
-    const rates = { low: A.renoLow, mid: A.renoMid, high: A.renoHigh };
-    return (rates[params.renoQuality] || A.renoMid) * (params.propertySize || 60);
+    let base;
+    if (params.renoQuality === 'custom') {
+      base = params.renoCustomAmt || 0;
+    } else {
+      const rates = { low: A.renoLow, mid: A.renoMid, high: A.renoHigh };
+      base = (rates[params.renoQuality] || A.renoMid) * (params.propertySize || 60);
+    }
+    const era = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
+    const hidden = params.renoQuality !== 'custom' ? (era.renoHiddenCost || 0) : 0;
+    return { base, hidden, total: base + hidden };
   },
 
   /**
@@ -64,12 +74,12 @@ window.Calculator = {
    * Full calculation for 100% Equity scenario
    */
   calcEquity(params) {
-    const reno = this.calcReno(params);
+    const renoObj = this.calcReno(params);
     const acq = this.calcAcquisitionCosts(params.purchasePrice, false, 0);
     const holding = this.calcHoldingCosts(params.projectMonths);
     const saleCosts = this.calcSaleCosts(params.arv);
 
-    const totalInvestment = params.purchasePrice + acq.total + reno + holding.total;
+    const totalInvestment = params.purchasePrice + acq.total + renoObj.total + holding.total;
     const grossProfit = params.arv - totalInvestment - saleCosts.total;
     const cgt = this.calcCGT(grossProfit, params.taxStructure);
     const netProfit = grossProfit - cgt;
@@ -81,7 +91,7 @@ window.Calculator = {
     return {
       mode: 'equity',
       purchasePrice: params.purchasePrice,
-      acq, reno, holding, saleCosts,
+      acq, reno: renoObj.base, renoHidden: renoObj.hidden, holding, saleCosts,
       totalInvestment,
       arv: params.arv,
       grossProfit,
@@ -142,13 +152,13 @@ window.Calculator = {
     const A = window.ASSUMPTIONS;
     const bankSetupFee = Math.round(loanAmount * A.bankSetupFeePct / 100);
     const acq = this.calcAcquisitionCosts(params.purchasePrice, true, params.ltvPct || 70);
-    const reno = this.calcReno(params);
+    const renoObj = this.calcReno(params);
     const holding = this.calcHoldingCosts(months);
     const saleCosts = this.calcSaleCosts(params.arv);
 
-    const totalEquityDeployed = ownEquity + reno + acq.total + holding.total;
+    const totalEquityDeployed = ownEquity + renoObj.total + acq.total + holding.total;
     // gross profit: arv minus everything paid out of pocket (equity + interest + sale costs)
-    const grossProfit = params.arv - loanAmount - reno - acq.total - holding.total - interest - saleCosts.total - ownEquity;
+    const grossProfit = params.arv - loanAmount - renoObj.total - acq.total - holding.total - interest - saleCosts.total - ownEquity;
     const cgt = this.calcCGT(grossProfit, params.taxStructure);
     const netProfit = grossProfit - cgt;
 
@@ -160,7 +170,7 @@ window.Calculator = {
       mode: 'loan',
       purchasePrice: params.purchasePrice,
       loanAmount, ownEquity, interest,
-      acq, reno, holding, saleCosts,
+      acq, reno: renoObj.base, renoHidden: renoObj.hidden, holding, saleCosts,
       totalEquityDeployed,
       arv: params.arv,
       grossProfit, cgt, netProfit,
@@ -173,25 +183,30 @@ window.Calculator = {
 
   /**
    * Risk score 1–10 for a scenario result.
-   * Factors: capital deployed as % of ARV (70%), project duration (30%). Profit is excluded.
+   * Factors: capital deployed as % of ARV (70%), project duration (30%), building era bonus.
+   * Profit is excluded from the base formula.
    */
   calcRiskScore(result, params) {
+    const A = window.ASSUMPTIONS;
+    const era = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
     const capitalFactor = Math.min(result.capitalRequired / params.arv, 1);
     const durationFactor = Math.min(params.projectMonths / 18, 1);
     const raw = capitalFactor * 0.70 + durationFactor * 0.30;
-    return Math.round(Math.min(Math.max(1 + raw * 9, 1), 10));
+    return Math.round(Math.min(Math.max(1 + raw * 9 + (era.riskBonus || 0), 1), 10));
   },
 
   /**
    * Run all three scenarios and return combined result
    */
   calcAll(params) {
+    const A = window.ASSUMPTIONS;
     const equity      = this.calcEquity(params);
     const partnership = this.calcPartnership(params);
     const loan        = this.calcLoan(params);
     equity.riskScore      = this.calcRiskScore(equity,      params);
     partnership.riskScore = this.calcRiskScore(partnership, params);
     loan.riskScore        = this.calcRiskScore(loan,        params);
-    return { equity, partnership, loan, params };
+    const eraInfo = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
+    return { equity, partnership, loan, params, eraInfo };
   }
 };

@@ -21,6 +21,7 @@
     <button class="nav-btn active" data-page="scenarios" data-i18n="navScenarios">Scenarios</button>
     <button class="nav-btn" data-page="compare"   data-i18n="navCompare">Compare</button>
     <button class="nav-btn" data-page="assumptions" data-i18n="navAssumptions">Assumptions</button>
+    <button class="nav-btn" data-page="guide"     data-i18n="navGuide">Guide</button>
     <button class="nav-btn" data-page="about"     data-i18n="navAbout">About</button>
   </nav>
   <div style="display:flex;align-items:center;gap:10px;">
@@ -111,6 +112,19 @@
               <option value="individual" data-i18n="taxIndividual">Individual (10% CGT)</option>
               <option value="company"    data-i18n="taxCompany">Company/SRL (16%)</option>
             </select>
+          </div>
+
+          <div class="field">
+            <label data-i18n="buildingEra">Building Era<span class="tip-icon" data-i18n-tip="tipBuildingEra" tabindex="0">ⓘ</span></label>
+            <select id="inp-era">
+              <option value="pre1940" data-i18n="eraPre1940">Pre-1940 (Interwar)</option>
+              <option value="1940"    data-i18n="era1940">1940–1963 (Early Communist)</option>
+              <option value="1963"    data-i18n="era1963">1963–1978 (Mid Communist)</option>
+              <option value="1978" selected data-i18n="era1978">1978–1989 (Late Communist)</option>
+              <option value="1990"    data-i18n="era1990">1990–2000 (Post-communist)</option>
+              <option value="2000"    data-i18n="era2000">2000+ (Modern)</option>
+            </select>
+            <div id="era-seismic-badge" class="era-badge"></div>
           </div>
         </div>
 
@@ -346,6 +360,41 @@
     <div class="card mt-2">
       <div class="card-section">Sources</div>
       <div id="assumptions-sources" class="source-list"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE: GUIDE
+══════════════════════════════════════════════════════ -->
+<div id="page-guide" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <h2 data-i18n="guideTitle">Building Era &amp; Risk Guide</h2>
+      <p class="hero-sub" data-i18n="guideSubtitle">How construction year affects price, renovation, financing, and risk.</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-section" data-i18n="guideEraTableTitle">Building Era Reference</div>
+      <div id="guide-era-table"></div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-section" data-i18n="guideSeismicTitle">Seismic Risk Classes Explained</div>
+      <div id="guide-seismic"></div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-section" data-i18n="guideHowToUseTitle">How to use in the calculator</div>
+      <div id="guide-how-to-use" class="about-content"></div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-section" data-i18n="guideMortgageNote">Note on Rs I mortgage eligibility</div>
+      <div id="guide-mortgage-note" class="about-content"></div>
+    </div>
+    <div class="card mt-2">
+      <div class="card-section" data-i18n="guideSourcesTitle">Sources</div>
+      <div id="guide-sources" class="source-list"></div>
     </div>
   </div>
 </div>
