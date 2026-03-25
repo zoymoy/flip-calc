@@ -141,75 +141,13 @@ window.Calculator = {
   },
 
   /**
-   * Full calculation for Mortgage/Loan scenario
-   */
-  calcLoan(params) {
-    const ltv = (params.ltvPct || 70) / 100;
-    const rate = (params.mortgageRate || 6.5) / 100;
-    const months = params.projectMonths || 9;
-
-    const loanAmount = Math.round(params.purchasePrice * ltv);
-    const ownEquity = params.purchasePrice - loanAmount;
-    const interest = Math.round(loanAmount * rate * (months / 12));
-
-    const A = window.ASSUMPTIONS;
-    const bankSetupFee = Math.round(loanAmount * A.bankSetupFeePct / 100);
-    const acq = this.calcAcquisitionCosts(params.purchasePrice, true, params.ltvPct || 70);
-    const renoObj = this.calcReno(params);
-    const holding = this.calcHoldingCosts(months);
-    const saleCosts = this.calcSaleCosts(params.arv);
-
-    const totalEquityDeployed = ownEquity + renoObj.total + acq.total + holding.total;
-    // gross profit: arv minus everything paid out of pocket (equity + interest + sale costs)
-    const grossProfit = params.arv - loanAmount - renoObj.total - acq.total - holding.total - interest - saleCosts.total - ownEquity;
-    const cgt = this.calcCGT(grossProfit, params.projectMonths);
-    const netProfit = grossProfit - cgt;
-
-    const roi = totalEquityDeployed > 0 ? (netProfit / totalEquityDeployed) * 100 : 0;
-    const annualROI = months > 0 ? roi * (12 / months) : 0;
-    const capitalFreed = params.purchasePrice - ownEquity;
-
-    return {
-      mode: 'loan',
-      purchasePrice: params.purchasePrice,
-      loanAmount, ownEquity, interest,
-      acq, reno: renoObj.base, renoHidden: renoObj.hidden, holding, saleCosts,
-      totalEquityDeployed,
-      arv: params.arv,
-      grossProfit, cgt, netProfit,
-      capitalRequired: totalEquityDeployed,
-      capitalFreed,
-      roi, annualROI,
-      profitMargin: params.arv > 0 ? (netProfit / params.arv) * 100 : 0,
-    };
-  },
-
-  /**
-   * Risk score 1–10 for a scenario result.
-   * Factors: capital deployed as % of ARV (70%), project duration (30%), building era bonus.
-   * Profit is excluded from the base formula.
-   */
-  calcRiskScore(result, params) {
-    const A = window.ASSUMPTIONS;
-    const era = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
-    const capitalFactor = Math.min(result.capitalRequired / params.arv, 1);
-    const durationFactor = Math.min(params.projectMonths / 18, 1);
-    const raw = capitalFactor * 0.70 + durationFactor * 0.30;
-    return Math.round(Math.min(Math.max(1 + raw * 9 + (era.riskBonus || 0), 1), 10));
-  },
-
-  /**
-   * Run all three scenarios and return combined result
+   * Run equity and partnership scenarios and return combined result
    */
   calcAll(params) {
     const A = window.ASSUMPTIONS;
     const equity      = this.calcEquity(params);
     const partnership = this.calcPartnership(params);
-    const loan        = this.calcLoan(params);
-    equity.riskScore      = this.calcRiskScore(equity,      params);
-    partnership.riskScore = this.calcRiskScore(partnership, params);
-    loan.riskScore        = this.calcRiskScore(loan,        params);
     const eraInfo = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
-    return { equity, partnership, loan, params, eraInfo };
+    return { equity, partnership, params, eraInfo };
   }
 };

@@ -267,7 +267,6 @@
   function renderResults(results) {
     renderEquity(results.equity, results.eraInfo);
     renderPartnership(results.partnership, results.eraInfo);
-    renderLoan(results.loan, results.eraInfo);
   }
 
   function metricHTML(label, value, cls) {
@@ -302,7 +301,6 @@
       ['roi',    tr.roiOnCapital,       pctPlain(r.roi),                 tr.tipRoiOnCapital],
       ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
       ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
-      ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
     ].filter(Boolean);
     document.getElementById('eq-table').innerHTML = buildTableRows(rows);
     document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
@@ -331,45 +329,9 @@
       ['roi-purple', tr.annualROI,      pctPlain(r.annualROI),           tr.tipAnnualROI],
       ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),        tr.tipProfitMargin],
       ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
-      ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
     ].filter(Boolean);
     document.getElementById('p-table').innerHTML = buildTableRows(rows);
     document.getElementById('p-col-head')?.classList.toggle('col-head-loss', r.yourNetProfit < 0);
-  }
-
-  function renderLoan(r, eraInfo) {
-    const tr = t();
-    document.getElementById('ln-metric-capital').textContent = fmt(r.capitalRequired);
-    document.getElementById('ln-metric-profit').textContent  = fmt(r.netProfit);
-    document.getElementById('ln-metric-roi').textContent     = pctPlain(r.roi);
-    document.getElementById('ln-metric-annroi').textContent  = pctPlain(r.annualROI);
-
-    const rows = [
-      eraInfo && !eraInfo.mortgageEligible && ['fullwarn', tr.noMortgageWarning],
-      ['td-lbl', tr.purchasePriceLabel, fmt(r.purchasePrice)],
-      ['td-lbl', tr.loanAmount,         fmt(r.loanAmount),               tr.tipLoanAmount],
-      ['td-lbl', tr.ownEquity,          fmt(r.ownEquity),                tr.tipOwnEquity],
-      ['td-lbl', tr.notaryFee,          fmt(r.acq.notary),               tr.tipNotaryFee],
-      ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
-      ['td-lbl', tr.bankSetupFee,       fmt(r.acq.bankSetupFee),         tr.tipBankSetupFee],
-      ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
-      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
-      ['td-lbl', tr.holdingCosts,       fmt(r.holding.total),            tr.tipHoldingCosts],
-      ['divider', tr.totalInvestment,   fmt(r.totalEquityDeployed)],
-      ['td-lbl', tr.loanInterest,       '−' + fmt(r.interest),          tr.tipLoanInterest],
-      ['td-lbl', tr.saleProceeds,       fmt(r.arv)],
-      ['td-lbl', tr.loanRepayment,      '−' + fmt(r.loanAmount)],
-      ['td-lbl', tr.sellerAgent,        '−' + fmt(r.saleCosts.sellerAgent), tr.tipSellerAgent],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.cgt),               tr.tipCapitalGainsTax],
-      ['profit', tr.netProfit,          fmt(r.netProfit),                tr.tipNetProfit],
-      ['roi',    tr.roiOnCapital,       pctPlain(r.roi),                 tr.tipRoiOnCapital],
-      ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
-      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
-      ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
-      ['risk',   tr.riskScore,          r.riskScore,                     tr.tipRiskScore],
-    ].filter(Boolean);
-    document.getElementById('ln-table').innerHTML = buildTableRows(rows);
-    document.getElementById('ln-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
   function buildTableRows(rows) {
@@ -387,16 +349,11 @@
         'roi-purple': 'roi-row',
         'warn': 'warn-row',
         'neg': 'neg-row',
-        'risk': 'risk-row',
         'td-lbl': '',
       }[type] || '';
       const tipHtml = tipText
         ? `<span class="tip-icon" aria-label="${escHtml(tipText)}" data-tip="${escHtml(tipText)}" tabindex="0">ⓘ</span>`
         : '';
-      if (type === 'risk') {
-        const level = val <= 3 ? 'low' : val <= 6 ? 'med' : 'high';
-        return `<tr class="risk-row"><td>${label}${tipHtml}</td><td><span class="risk-badge risk-${level}">${val} / 10</span></td></tr>`;
-      }
       return `<tr class="${rowClass}"><td class="${type === 'td-lbl' ? 'td-lbl' : ''}">${label}${tipHtml}</td><td>${val}</td></tr>`;
     }).join('');
   }
@@ -441,13 +398,12 @@
 
   function renderSummaries(results) {
     const tr = t();
-    const { equity: eq, partnership: pt, loan: ln } = results;
+    const { equity: eq, partnership: pt } = results;
 
     // helper to pass fmt into the result objects for use in template strings
     const withFmt = r => Object.assign({ fmt }, r);
     const eqF = withFmt(eq);
     const ptF = withFmt(pt);
-    const lnF = withFmt(ln);
 
     const share = Math.round((params.yourSharePct || 50));
     const label = tr.verdictLabel;
@@ -457,7 +413,7 @@
     if (eqEl) eqEl.innerHTML = buildSummaryHTML(
       tr.summaryEquityExplain(eqF),
       tr.summaryEquityPros,
-      tr.summaryEquityCons(eqF, ptF, lnF),
+      tr.summaryEquityCons(eqF, ptF),
       tr.summaryEquityVerdict(eqF),
       'teal', label
     );
@@ -470,16 +426,6 @@
       tr.summaryPartnerCons,
       tr.summaryPartnerVerdict(ptF),
       'purple', label
-    );
-
-    // Loan
-    const lnEl = document.getElementById('ln-summary');
-    if (lnEl) lnEl.innerHTML = buildSummaryHTML(
-      tr.summaryLoanExplain(lnF),
-      tr.summaryLoanPros(eqF, lnF),
-      tr.summaryLoanCons,
-      tr.summaryLoanVerdict(lnF),
-      'blue', label
     );
   }
 
@@ -568,7 +514,7 @@
     if (era) era.value = params.buildingEra || '1978';
     // Update display
     document.getElementById('inp-price-val').textContent   = fmt(params.purchasePrice);
-    document.getElementById('inp-size-val').textContent    = params.propertySize + ' sqm';
+    document.getElementById('inp-size-val').textContent    = params.propertySize + ' m²';
     document.getElementById('inp-arv-val').textContent     = fmt(params.arv);
     document.getElementById('inp-months-val').textContent  = t().months(params.projectMonths);
     document.getElementById('inp-rate-val').textContent    = params.mortgageRate + '%';
@@ -632,6 +578,8 @@
       container.innerHTML = '';
       if (empty) empty.classList.remove('hidden');
       document.getElementById('compare-charts-wrap')?.classList.add('hidden');
+      const sumTable = document.getElementById('compare-summary-table');
+      if (sumTable) sumTable.innerHTML = '';
       return;
     }
     if (empty) empty.classList.add('hidden');
@@ -640,16 +588,29 @@
       <label class="compare-check">
         <input type="checkbox" value="${escHtml(item.name)}" checked>
         ${escHtml(item.name)}
-      </label>`).join('') + `</div>
-      <button class="btn btn-teal" id="btn-run-compare">${tr.compareBtn}</button>`;
+      </label>`).join('') + `</div>`;
 
-    document.getElementById('btn-run-compare')?.addEventListener('click', runCompare);
+    // Auto-render on checkbox change
+    container.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', runCompare);
+    });
+
+    // Render immediately
+    runCompare();
   }
 
   function runCompare() {
     const checks = document.querySelectorAll('#compare-checks input[type=checkbox]:checked');
     const names = Array.from(checks).map(c => c.value);
-    if (names.length < 2) { showToast(t().compareSelectTwo); return; }
+
+    const wrap = document.getElementById('compare-charts-wrap');
+    const sumTable = document.getElementById('compare-summary-table');
+
+    if (names.length < 2) {
+      if (wrap) wrap.classList.add('hidden');
+      if (sumTable) sumTable.innerHTML = '';
+      return;
+    }
 
     const scenarioResults = names.map(name => {
       const data = window.Storage.load(name);
@@ -658,14 +619,34 @@
       return { name, results: window.Calculator.calcAll(p) };
     }).filter(Boolean);
 
-    const wrap = document.getElementById('compare-charts-wrap');
+    if (scenarioResults.length < 2) return;
+
     if (wrap) wrap.classList.remove('hidden');
+    renderComparisonTable(scenarioResults);
 
     const tr = t();
     window.Charts.renderCompare('chart-compare-roi', scenarioResults, 'roi', tr);
     window.Charts.renderCompare('chart-compare-annroi', scenarioResults, 'annualROI', tr);
     window.Charts.renderCompare('chart-compare-profit', scenarioResults, 'netProfit', tr);
     window.Charts.renderCompare('chart-compare-capital', scenarioResults, 'capitalRequired', tr);
+  }
+
+  function renderComparisonTable(scenarioResults) {
+    const el = document.getElementById('compare-summary-table');
+    if (!el) return;
+    const tr = t();
+    const headers = `<tr><th></th>${scenarioResults.map(sr => `<th>${escHtml(sr.name)}</th>`).join('')}</tr>`;
+    const rows = [
+      [tr.purchasePriceLabel, sr => fmt(sr.results.params.purchasePrice)],
+      ['ARV',                  sr => fmt(sr.results.params.arv)],
+      [tr.propertySize + ' / ' + tr.projectMonths, sr => `${sr.results.params.propertySize} m² / ${sr.results.params.projectMonths} mo`],
+      [tr.netProfit + ' (100%)', sr => fmt(sr.results.equity.netProfit)],
+      [tr.annualROI + ' (100%)', sr => sr.results.equity.annualROI.toFixed(1) + '%'],
+      [tr.netProfit + ' (' + tr.scenarioPartner + ')', sr => fmt(sr.results.partnership.netProfit)],
+    ].map(([label, fn]) =>
+      `<tr><td class="cmp-label">${label}</td>${scenarioResults.map(sr => `<td>${fn(sr)}</td>`).join('')}</tr>`
+    ).join('');
+    el.innerHTML = `<table class="compare-summary"><thead>${headers}</thead><tbody>${rows}</tbody></table>`;
   }
 
   // ── Assumptions page ───────────────────────────────────────────────────────

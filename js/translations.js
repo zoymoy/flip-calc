@@ -132,13 +132,10 @@ window.TRANSLATIONS = {
     tipMgmtFeeLabel:    "Management fee earned by the active partner, deducted from gross profit before the equity split.",
     tipProfitShareLabel:"Your share of profit remaining after the management fee, proportional to your equity percentage.",
     tipCapitalFreed:    "Capital not deployed due to leverage or partnership — available for a second simultaneous deal.",
-    riskScore:          "Risk Score",
-    tipRiskScore:       "Deal risk rated 1–10 based on profit margin cushion, leverage level, and project duration. Higher = riskier.",
 
     // Table headers
     scenario100: "100% Self",
     scenarioPartner: "Partnership",
-    scenarioLoan: "With Loan",
 
     // Charts
     chartROITitle: "ROI Comparison",
@@ -239,7 +236,7 @@ window.TRANSLATIONS = {
       "Full control, no partner disagreements",
       "Simplest structure — no bank approvals needed",
     ],
-    summaryEquityCons: (r, p, l) => [
+    summaryEquityCons: (r, p) => [
       `Highest capital required (${r.fmt(r.capitalRequired)} vs ${r.fmt(p.capitalRequired)} with a partner)`,
       "Ties up your entire capital in one deal",
       "If the deal goes wrong, you absorb 100% of the loss",
@@ -260,19 +257,6 @@ window.TRANSLATIONS = {
     ],
     summaryPartnerVerdict: (r) => `Smart leverage — same ROI %, half the capital, and a second deal becomes possible.`,
 
-    // Loan summary
-    summaryLoanExplain: (r) => `A Romanian bank funds ${r.fmt(r.loanAmount)} of the purchase. You bring the down payment (${r.fmt(r.ownEquity)}) plus renovation costs. Interest adds ${r.fmt(r.interest)} to your total cost.`,
-    summaryLoanPros: (eq, ln) => [
-      `Highest ROI % on your own capital (${Math.round(ln.roi)}% vs ${Math.round(eq.roi)}% self-funded)`,
-      `Frees up ${ln.fmt(ln.capitalFreed)} for other investments`,
-      "Bank due-diligence acts as an independent deal check",
-    ],
-    summaryLoanCons: [
-      "Interest cost reduces absolute net profit",
-      "Romanian banks require income proof and can take 4–8 weeks to approve",
-      "Variable rate after year 2 adds uncertainty to your exit numbers",
-    ],
-    summaryLoanVerdict: (r) => `Best ROI % on deployed capital — ideal if you want to scale across multiple deals.`,
   },
 
   ro: {
@@ -403,12 +387,9 @@ window.TRANSLATIONS = {
     tipMgmtFeeLabel:    "Comisionul de management câștigat de partenerul activ, dedus din profitul brut înainte de împărțire.",
     tipProfitShareLabel:"Cota ta din profitul rămas după comisionul de management, proporțional cu participarea ta la capital.",
     tipCapitalFreed:    "Capital nealocat datorită efectului de levier sau parteneriatului — disponibil pentru o a doua tranzacție simultană.",
-    riskScore:          "Scor de risc",
-    tipRiskScore:       "Riscul tranzacției notat 1–10, pe baza marjei de profit, gradului de îndatorare și duratei proiectului. Mai mare = mai riscant.",
 
     scenario100: "100% propriu",
     scenarioPartner: "Parteneriat",
-    scenarioLoan: "Cu credit",
 
     chartROITitle: "Comparație ROI",
     chartWaterfallTitle: "Cascada capitalului",
@@ -502,7 +483,7 @@ window.TRANSLATIONS = {
       "Control total, fără conflicte cu parteneri",
       "Structură simplă — nu necesită aprobare bancară",
     ],
-    summaryEquityCons: (r, p, l) => [
+    summaryEquityCons: (r, p) => [
       `Cel mai mare capital necesar (${r.fmt(r.capitalRequired)} față de ${r.fmt(p.capitalRequired)} cu partener)`,
       "Blochează tot capitalul tău într-o singură tranzacție",
       "Dacă tranzacția eșuează, absorbi 100% din pierdere",
@@ -522,18 +503,6 @@ window.TRANSLATIONS = {
     ],
     summaryPartnerVerdict: () => `Levier inteligent — același ROI %, jumătate din capital, o a doua tranzacție devine posibilă.`,
 
-    summaryLoanExplain: (r) => `O bancă românească finanțează ${r.fmt(r.loanAmount)} din achiziție. Aduci avansul (${r.fmt(r.ownEquity)}) plus renovarea. Dobânda adaugă ${r.fmt(r.interest)} la costul total.`,
-    summaryLoanPros: (eq, ln) => [
-      `Cel mai mare ROI % pe capitalul propriu (${Math.round(ln.roi)}% față de ${Math.round(eq.roi)}%)`,
-      `Eliberează ${ln.fmt(ln.capitalFreed)} pentru alte investiții`,
-      "Due diligence-ul băncii acționează ca verificare independentă",
-    ],
-    summaryLoanCons: [
-      "Costul dobânzii reduce profitul net absolut",
-      "Aprobare bancară poate dura 4–8 săptămâni",
-      "Rata variabilă după anul 2 adaugă incertitudine",
-    ],
-    summaryLoanVerdict: () => `Cel mai mare ROI % pe capital investit — ideal pentru scalarea pe mai multe tranzacții.`,
   },
 
   he: {
@@ -664,12 +633,9 @@ window.TRANSLATIONS = {
     tipMgmtFeeLabel:    "דמי ניהול שהשותף הפעיל מרוויח, מנוכים מהרווח הגולמי לפני חלוקת הרווח.",
     tipProfitShareLabel:"חלקך ברווח שנותר לאחר דמי הניהול, ביחס לאחוז ההון שלך.",
     tipCapitalFreed:    "הון שלא נפרס הודות למינוף או שותפות — זמין לעסקה שנייה במקביל.",
-    riskScore:          "ציון סיכון",
-    tipRiskScore:       "סיכון העסקה בסולם 1–10, בהתבסס על מרווח הרווח, רמת המינוף ומשך הפרויקט. גבוה יותר = מסוכן יותר.",
 
     scenario100: "100% עצמי",
     scenarioPartner: "שותפות",
-    scenarioLoan: "עם הלוואה",
 
     chartROITitle: "השוואת ROI",
     chartWaterfallTitle: "מפל הון",
@@ -783,17 +749,5 @@ window.TRANSLATIONS = {
     ],
     summaryPartnerVerdict: () => `מינוף חכם — אותו ROI, חצי הון, ועסקה שנייה הופכת לאפשרית.`,
 
-    summaryLoanExplain: (r) => `בנק רומני מממן ${r.fmt(r.loanAmount)} מהרכישה. אתה מביא את המקדמה (${r.fmt(r.ownEquity)}) ועלויות השיפוץ. הריבית מוסיפה ${r.fmt(r.interest)} לעלות הכוללת.`,
-    summaryLoanPros: (eq, ln) => [
-      `ROI הגבוה ביותר על ההון שלך (${Math.round(ln.roi)}% לעומת ${Math.round(eq.roi)}% ב-100%)`,
-      `משחרר ${ln.fmt(ln.capitalFreed)} להשקעות נוספות`,
-      "בדיקת הבנק משמשת כבדיקת נאותות עצמאית",
-    ],
-    summaryLoanCons: [
-      "עלות הריבית מפחיתה את הרווח הנקי המוחלט",
-      "אישור בנקאי ברומניה יכול לקחת 4–8 שבועות",
-      "ריבית משתנה לאחר שנה 2 מוסיפה אי-ודאות",
-    ],
-    summaryLoanVerdict: () => `ROI הגבוה ביותר על ההון המושקע — אידיאלי למי שרוצה להרחיב לעסקאות מרובות.`,
   }
 };

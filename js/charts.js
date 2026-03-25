@@ -22,31 +22,31 @@ window.Charts = {
   },
 
   /**
-   * ROI comparison bar chart (3 modes × 2 metrics)
+   * ROI comparison bar chart (2 modes × 2 metrics)
    */
   renderROI(canvasId, results, t) {
     this.destroy(canvasId);
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    const { equity, partnership, loan } = results;
+    const { equity, partnership } = results;
 
     this._charts[canvasId] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: [t.scenario100, t.scenarioPartner, t.scenarioLoan],
+        labels: [t.scenario100, t.scenarioPartner],
         datasets: [
           {
             label: t.roiOnCapital,
-            data: [equity.roi, partnership.roi, loan.roi].map(v => +v.toFixed(1)),
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg],
-            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
+            data: [equity.roi, partnership.roi].map(v => +v.toFixed(1)),
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg],
+            borderColor: [this.colors.teal.border, this.colors.purple.border],
             borderWidth: 1.5, borderRadius: 6,
           },
           {
             label: t.annualROI,
-            data: [equity.annualROI, partnership.annualROI, loan.annualROI].map(v => +v.toFixed(1)),
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg].map(c => c.replace('0.85','0.35')),
-            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
+            data: [equity.annualROI, partnership.annualROI].map(v => +v.toFixed(1)),
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg].map(c => c.replace('0.85','0.35')),
+            borderColor: [this.colors.teal.border, this.colors.purple.border],
             borderWidth: 1, borderRadius: 6, borderDash: [4,2],
           }
         ]
@@ -73,25 +73,25 @@ window.Charts = {
     this.destroy(canvasId);
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    const { equity, partnership, loan } = results;
+    const { equity, partnership } = results;
 
     this._charts[canvasId] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: [t.scenario100, t.scenarioPartner, t.scenarioLoan],
+        labels: [t.scenario100, t.scenarioPartner],
         datasets: [
           {
             label: t.capitalRequired,
-            data: [equity.capitalRequired, partnership.capitalRequired, loan.capitalRequired],
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg].map(c=>c.replace('0.85','0.5')),
-            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
+            data: [equity.capitalRequired, partnership.capitalRequired],
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg].map(c=>c.replace('0.85','0.5')),
+            borderColor: [this.colors.teal.border, this.colors.purple.border],
             borderWidth: 1.5, borderRadius: 6,
           },
           {
             label: t.netProfitLabel,
-            data: [equity.netProfit, partnership.netProfit, loan.netProfit],
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg],
-            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
+            data: [equity.netProfit, partnership.netProfit],
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg],
+            borderColor: [this.colors.teal.border, this.colors.purple.border],
             borderWidth: 1.5, borderRadius: 6,
           }
         ]
@@ -163,32 +163,40 @@ window.Charts = {
 
   /**
    * Multi-scenario comparison bar (for Compare page)
+   * X-axis = scenario names; two datasets = Equity and Partnership
    */
   renderCompare(canvasId, scenarioResults, metric, t) {
     this.destroy(canvasId);
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
 
-    const palette = [this.colors.teal, this.colors.purple, this.colors.blue, this.colors.amber, this.colors.red];
-
-    const modes = ['equity', 'partnership', 'loan'];
-    const modeLabels = [t.scenario100, t.scenarioPartner, t.scenarioLoan];
     const isPercent = metric === 'roi' || metric === 'annualROI';
+    const labels = scenarioResults.map(sr => sr.name);
+    const val = (sr, mode) => {
+      const v = sr.results[mode][metric];
+      return isPercent ? +v.toFixed(1) : Math.round(v);
+    };
 
-    const datasets = scenarioResults.map((sr, i) => ({
-      label: sr.name,
-      data: modes.map(m => {
-        const v = sr.results[m][metric];
-        return isPercent ? +v.toFixed(1) : Math.round(v);
-      }),
-      backgroundColor: palette[i % palette.length].bg,
-      borderColor: palette[i % palette.length].border,
-      borderWidth: 1.5, borderRadius: 6,
-    }));
+    const datasets = [
+      {
+        label: t.scenario100,
+        data: scenarioResults.map(sr => val(sr, 'equity')),
+        backgroundColor: this.colors.teal.bg,
+        borderColor: this.colors.teal.border,
+        borderWidth: 1.5, borderRadius: 6,
+      },
+      {
+        label: t.scenarioPartner,
+        data: scenarioResults.map(sr => val(sr, 'partnership')),
+        backgroundColor: this.colors.purple.bg,
+        borderColor: this.colors.purple.border,
+        borderWidth: 1.5, borderRadius: 6,
+      },
+    ];
 
     this._charts[canvasId] = new Chart(ctx, {
       type: 'bar',
-      data: { labels: modeLabels, datasets },
+      data: { labels, datasets },
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
