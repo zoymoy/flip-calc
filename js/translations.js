@@ -26,7 +26,6 @@ window.TRANSLATIONS = {
 
     // Deal params
     sectionDeal: "Deal Parameters",
-    sectionFinancing: "Financing",
     sectionPartnership: "Partnership",
     sectionCosts: "Cost Breakdown",
     sectionResults: "Results",
@@ -52,8 +51,6 @@ window.TRANSLATIONS = {
     era1990:     "1990–2000 (Post-communist)",
     era2000:     "2000+ (Modern)",
 
-    mortgageRate: "Mortgage Rate (%)",
-    ltvPct: "Loan-to-Value (LTV %)",
     yourSharePct: "Your Share (%)",
     mgmtFeePct: "Management Fee (% of profit)",
 
@@ -102,8 +99,6 @@ window.TRANSLATIONS = {
     tipArv:             "After Repair Value — the resale price you expect after renovation. The most uncertain input; treat it conservatively.",
     tipProjectMonths:   "Total duration from purchase to receiving sale proceeds. Affects holding costs and annualises your ROI.",
     tipTaxStructure:    "Individual (PF): 3% CGT if sold within 3 years, 1% if held longer (Fiscal Code Art. 111).",
-    tipMortgageRate:    "Annual loan interest rate. Default 6.5% reflects BNR base + bank margin for non-resident buyers, Q1 2026.",
-    tipLtvPct:          "Loan-to-Value: share of purchase price the bank funds. Romanian banks cap non-residents at 70%.",
     tipYourSharePct:    "Your equity contribution as % of total project cost. The partner funds the rest and earns the same share of profit.",
     tipMgmtFeePct:      "Fee for the active partner running the project, deducted from gross profit before the equity split. Set to 0 for a pure split.",
 
@@ -121,11 +116,11 @@ window.TRANSLATIONS = {
     tipSellerAgent:     "Seller-side agent commission at 2.5% of ARV (APAIR standard), deducted from sale proceeds.",
     tipSellerNotary:    "Notary fee on the sale deed, ~0.15% of sale price, paid by the seller.",
     tipCapitalGainsTax: "Romanian CGT: 3% if sold within 3 years, 1% if held longer (Art. 111). Applied to net profit only.",
-    tipNetProfit:       "After-tax profit remaining after all acquisition, renovation, holding, sale costs, and CGT.",
-    tipRoiOnCapital:    "Net profit ÷ total capital deployed, as a %. Does not account for deal duration.",
-    tipAnnualROI:       "ROI scaled to 12 months (ROI × 12 ÷ project months). Enables fair comparison across deals of different durations.",
+    tipNetProfit:       "After-tax profit remaining after all costs and CGT. Formula: (ARV − Capital Required − Sale Costs) − CGT",
+    tipRoiOnCapital:    "Net profit ÷ total capital deployed, as a %. Does not account for deal duration. Formula: Net Profit ÷ Capital Required × 100",
+    tipAnnualROI:       "ROI scaled to 12 months. Enables fair comparison across deals of different durations. Formula: ROI × 12 ÷ Duration (months)",
     tipProfitMargin:    "Net profit as % of ARV. Shows how much of every euro of sale price becomes take-home income.",
-    tipCapitalRequired: "Total cash you need from your own funds to complete this deal.",
+    tipCapitalRequired: "Total cash you need from your own funds to complete this deal. Formula: Purchase Price + Acquisition Costs + Renovation + Holding Costs",
     tipLoanAmount:      "The amount the bank lends (LTV% × purchase price). Repaid in full from sale proceeds.",
     tipOwnEquity:       "Your cash down payment: purchase price minus loan amount. You also fund renovation and holding costs.",
     tipLoanInterest:    "Total interest over project duration: loan × annual rate × (months ÷ 12). Simple interest, not amortised.",
@@ -244,7 +239,7 @@ window.TRANSLATIONS = {
     summaryEquityVerdict: (r) => `Best ROI on paper — but demands the most cash up front.`,
 
     // Partnership summary
-    summaryPartnerExplain: (r, share) => `You and a partner each fund ${share}% of the deal. You split the profit proportionally${r.mgmtFee > 0 ? ', plus you earn a management fee for running the project' : ''}.`,
+    summaryPartnerExplain: (r, share) => `You fund ${share}% of the deal, your partner funds the rest. You split the profit proportionally${r.mgmtFee > 0 ? ', plus you earn a management fee for running the project' : ''}.`,
     summaryPartnerPros: (r, p) => [
       `Cuts your capital requirement roughly in half (${p.fmt(p.capitalRequired)} instead of ${p.fmt(r.capitalRequired)})`,
       "Freed capital can fund a second deal simultaneously",
@@ -256,6 +251,13 @@ window.TRANSLATIONS = {
       "Partner misalignment can delay or derail the project",
     ],
     summaryPartnerVerdict: (r) => `Smart leverage — same ROI %, half the capital, and a second deal becomes possible.`,
+
+    vsStockMarket:   "VS Stock Market",
+    stockFlipCol:    "Flip",
+    stockMarketCol:  "Market (8%)",
+    stockFlipWins:   (diff) => `Flip beats the market by ${diff}`,
+    stockMarketWins: (diff) => `Market beats the flip by ${diff}`,
+    stockTie:        "Neck and neck with the market",
 
   },
 
@@ -283,7 +285,6 @@ window.TRANSLATIONS = {
     confirmDelete: "Ștergi acest scenariu?",
 
     sectionDeal: "Parametrii tranzacției",
-    sectionFinancing: "Finanțare",
     sectionPartnership: "Parteneriat",
     sectionCosts: "Detaliu costuri",
     sectionResults: "Rezultate",
@@ -309,8 +310,6 @@ window.TRANSLATIONS = {
     era1990:     "1990–2000 (Post-comunism)",
     era2000:     "2000+ (Modern)",
 
-    mortgageRate: "Rata dobânzii (%)",
-    ltvPct: "Finanțare bancară (LTV %)",
     yourSharePct: "Cota ta (%)",
     mgmtFeePct: "Comision management (% din profit)",
 
@@ -357,8 +356,6 @@ window.TRANSLATIONS = {
     tipArv:             "Valoarea după renovare — prețul de vânzare estimat după finalizarea lucrărilor. Cel mai incert parametru; fiți conservatori.",
     tipProjectMonths:   "Durata totală de la achiziție până la primirea banilor din vânzare. Afectează costurile de deținere și ROI-ul anual.",
     tipTaxStructure:    "Persoană fizică (PF): 3% impozit dacă vinzi în primii 3 ani, 1% dacă deții mai mult (Codul Fiscal Art. 111).",
-    tipMortgageRate:    "Rata anuală a dobânzii la credit. Implicit 6,5% reflectă rata BNR + marja bancară pentru nerezidenți în T1 2026.",
-    tipLtvPct:          "Loan-to-Value: ponderea prețului de achiziție finanțată de bancă. Băncile românești limitează nerezidenții la 70%.",
     tipYourSharePct:    "Contribuția ta de capital ca % din costul total al proiectului. Partenerul finanțează restul și câștigă aceeași pondere din profit.",
     tipMgmtFeePct:      "Comisionul partenerului activ pentru gestionarea proiectului, dedus din profitul brut înainte de împărțire. Setați 0 pentru o împărțire simplă.",
 
@@ -376,11 +373,11 @@ window.TRANSLATIONS = {
     tipSellerAgent:     "Comision agent vânzător de 2,5% din ARV (standard APAIR), dedus din prețul de vânzare.",
     tipSellerNotary:    "Onorarii notariale la vânzare, ~0,15% din prețul de vânzare, plătite de vânzător.",
     tipCapitalGainsTax: "Impozit pe câștig de capital: 3% dacă vinzi în primii 3 ani, 1% dacă deții mai mult (Art. 111). Aplicat doar la profit pozitiv.",
-    tipNetProfit:       "Profitul după taxe, după deducerea tuturor costurilor de achiziție, renovare, deținere, vânzare și impozit.",
-    tipRoiOnCapital:    "Profit net ÷ capital total investit, exprimat procentual. Nu ține cont de durata tranzacției.",
-    tipAnnualROI:       "ROI scalat la 12 luni (ROI × 12 ÷ luni proiect). Permite comparații corecte între tranzacții de durate diferite.",
+    tipNetProfit:       "Profitul după taxe, după deducerea tuturor costurilor și impozitului. Formulă: (ARV − Capital necesar − Costuri vânzare) − Impozit",
+    tipRoiOnCapital:    "Profit net ÷ capital total investit, exprimat procentual. Nu ține cont de durată. Formulă: Profit net ÷ Capital necesar × 100",
+    tipAnnualROI:       "ROI scalat la 12 luni. Permite comparații corecte între tranzacții de durate diferite. Formulă: ROI × 12 ÷ Durată (luni)",
     tipProfitMargin:    "Profit net ca % din ARV. Arată cât din fiecare euro încasat devine profit.",
-    tipCapitalRequired: "Totalul numerarului propriu necesar pentru finalizarea acestei tranzacții.",
+    tipCapitalRequired: "Totalul numerarului propriu necesar pentru finalizarea acestei tranzacții. Formulă: Preț achiziție + Costuri achiziție + Renovare + Costuri deținere",
     tipLoanAmount:      "Suma împrumutată de la bancă (LTV% × preț achiziție). Se rambursează integral din prețul de vânzare.",
     tipOwnEquity:       "Avansul tău cash: prețul de achiziție minus suma creditată. Finanțezi și renovarea și costurile de deținere.",
     tipLoanInterest:    "Dobânda totală pe durata proiectului: credit × rată anuală × (luni ÷ 12). Dobândă simplă, nu amortizată.",
@@ -490,7 +487,7 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: () => `Cel mai mare profit absolut — dar necesită cel mai mult capital în avans.`,
 
-    summaryPartnerExplain: (r, share) => `Tu și un partener finanțați fiecare câte ${share}% din tranzacție. Împărțiți profitul proporțional${r.mgmtFee > 0 ? ", plus primești un comision de management" : ""}.`,
+    summaryPartnerExplain: (r, share) => `Tu finanțezi ${share}% din tranzacție, partenerul finanțează restul. Împărțiți profitul proporțional${r.mgmtFee > 0 ? ", plus primești un comision de management" : ""}.`,
     summaryPartnerPros: (r, p) => [
       `Reduce necesarul de capital (${p.fmt(p.capitalRequired)} în loc de ${p.fmt(r.capitalRequired)})`,
       "Capitalul eliberat poate finanța o a doua tranzacție simultan",
@@ -502,6 +499,13 @@ window.TRANSLATIONS = {
       "Dezacordurile cu partenerul pot întârzia sau bloca proiectul",
     ],
     summaryPartnerVerdict: () => `Levier inteligent — același ROI %, jumătate din capital, o a doua tranzacție devine posibilă.`,
+
+    vsStockMarket:   "VS Piața Bursieră",
+    stockFlipCol:    "Flip",
+    stockMarketCol:  "Bursă (8%)",
+    stockFlipWins:   (diff) => `Flip-ul depășește bursa cu ${diff}`,
+    stockMarketWins: (diff) => `Bursa depășește flip-ul cu ${diff}`,
+    stockTie:        "La egalitate cu bursa",
 
   },
 
@@ -529,7 +533,6 @@ window.TRANSLATIONS = {
     confirmDelete: "למחוק את התרחיש?",
 
     sectionDeal: "פרמטרי העסקה",
-    sectionFinancing: "מימון",
     sectionPartnership: "שותפות",
     sectionCosts: "פירוט עלויות",
     sectionResults: "תוצאות",
@@ -555,8 +558,6 @@ window.TRANSLATIONS = {
     era1990:     "1990–2000 (פוסט-קומוניזם)",
     era2000:     "2000+ (מודרני)",
 
-    mortgageRate: "ריבית משכנתא (%)",
-    ltvPct: "מימון בנקאי (LTV %)",
     yourSharePct: "חלקך (%)",
     mgmtFeePct: "דמי ניהול (% מהרווח)",
 
@@ -603,8 +604,6 @@ window.TRANSLATIONS = {
     tipArv:             "ערך לאחר שיפוץ — מחיר המכירה הצפוי לאחר סיום העבודות. הפרמטר הכי לא ודאי; יש להיות שמרנים.",
     tipProjectMonths:   "משך כולל מרכישה ועד קבלת כספי המכירה. משפיע על עלויות ההחזקה ועל ROI השנתי.",
     tipTaxStructure:    "יחיד (PF): 3% מס רווח הון אם נמכר תוך 3 שנים, 1% אם מוחזק יותר (סעיף 111 לחוק המס).",
-    tipMortgageRate:    "שיעור הריבית השנתי על ההלוואה. ברירת מחדל 6.5% משקפת ריבית BNR + מרווח בנק לרוכשים שאינם תושבים, Q1 2026.",
-    tipLtvPct:          "Loan-to-Value: חלק ממחיר הרכישה שהבנק מממן. הבנקים הרומניים מגבילים לא-תושבים ל-70%.",
     tipYourSharePct:    "תרומת ההון שלך כ-% מסך עלות הפרויקט. השותף מממן את השאר ומרוויח אותו חלק מהרווח.",
     tipMgmtFeePct:      "שכר עבור השותף הפעיל שמנהל את הפרויקט, מנוכה מהרווח הגולמי לפני החלוקה. הגדר 0 לחלוקה פשוטה.",
 
@@ -622,11 +621,11 @@ window.TRANSLATIONS = {
     tipSellerAgent:     "עמלת סוכן מוכר בשיעור 2.5% מה-ARV (תקן APAIR), מנוכה מתמורת המכירה.",
     tipSellerNotary:    "שכר נוטריון על שטר המכירה, ~0.15% ממחיר המכירה, משולם על ידי המוכר.",
     tipCapitalGainsTax: "מס רווח הון ברומניה: 3% אם נמכר תוך 3 שנים, 1% אם מוחזק יותר (סעיף 111). מחושב רק על רווח חיובי.",
-    tipNetProfit:       "רווח נקי לאחר מס, לאחר ניכוי כל עלויות הרכישה, שיפוץ, החזקה, מכירה ומס.",
-    tipRoiOnCapital:    "רווח נקי ÷ הון כולל שנפרס, באחוזים. אינו מתחשב במשך העסקה.",
-    tipAnnualROI:       "ROI מחושב ל-12 חודשים (ROI × 12 ÷ חודשי פרויקט). מאפשר השוואה הוגנת בין עסקאות באורכים שונים.",
+    tipNetProfit:       "רווח נקי לאחר מס וכל העלויות. נוסחה: (ARV − הון נדרש − עלויות מכירה) − מס",
+    tipRoiOnCapital:    "רווח נקי ÷ הון כולל שנפרס, באחוזים. אינו מתחשב במשך העסקה. נוסחה: רווח נקי ÷ הון נדרש × 100",
+    tipAnnualROI:       "ROI מחושב ל-12 חודשים. מאפשר השוואה הוגנת בין עסקאות באורכים שונים. נוסחה: ROI × 12 ÷ משך (חודשים)",
     tipProfitMargin:    "רווח נקי כ-% מה-ARV. מראה כמה מכל אירו של מחיר מכירה הופך להכנסה.",
-    tipCapitalRequired: "סך המזומן שעליך לפרוס מכיסך להשלמת העסקה.",
+    tipCapitalRequired: "סך המזומן שעליך לפרוס מכיסך להשלמת העסקה. נוסחה: מחיר רכישה + עלויות רכישה + שיפוץ + עלויות החזקה",
     tipLoanAmount:      "הסכום שהבנק מלווה (LTV% × מחיר רכישה). נפרע במלואו מתמורת המכירה.",
     tipOwnEquity:       "המקדמה שלך במזומן: מחיר הרכישה פחות סכום ההלוואה. אתה גם מממן שיפוץ ועלויות החזקה.",
     tipLoanInterest:    "ריבית כוללת לאורך הפרויקט: הלוואה × ריבית שנתית × (חודשים ÷ 12). ריבית פשוטה, לא משכנתא.",
@@ -736,7 +735,7 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: () => `הרווח הגבוה ביותר בפועל — אך דורש את ההון הגדול ביותר מראש.`,
 
-    summaryPartnerExplain: (r, share) => `אתה ושותף מממנים כל אחד ${share}% מהעסקה. הרווח מתחלק באותו יחס${r.mgmtFee > 0 ? ", ובנוסף אתה מקבל דמי ניהול על ניהול הפרויקט" : ""}.`,
+    summaryPartnerExplain: (r, share) => `אתה מממן ${share}% מהעסקה, השותף מממן את השאר. הרווח מתחלק באותו יחס${r.mgmtFee > 0 ? ", ובנוסף אתה מקבל דמי ניהול על ניהול הפרויקט" : ""}.`,
     summaryPartnerPros: (r, p) => [
       `חוצה את דרישת ההון (${p.fmt(p.capitalRequired)} במקום ${p.fmt(r.capitalRequired)})`,
       "ההון הפנוי יכול לממן עסקה שנייה במקביל",
@@ -748,6 +747,13 @@ window.TRANSLATIONS = {
       "חוסר התאמה עם השותף עלול לעכב או לפגוע בפרויקט",
     ],
     summaryPartnerVerdict: () => `מינוף חכם — אותו ROI, חצי הון, ועסקה שנייה הופכת לאפשרית.`,
+
+    vsStockMarket:   "מול שוק ההון",
+    stockFlipCol:    "פליפ",
+    stockMarketCol:  "שוק (8%)",
+    stockFlipWins:   (diff) => `הפליפ עוקף את השוק ב-${diff}`,
+    stockMarketWins: (diff) => `השוק עוקף את הפליפ ב-${diff}`,
+    stockTie:        "תיקו מול שוק ההון",
 
   }
 };

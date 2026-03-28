@@ -17,8 +17,6 @@
     projectMonths: 9,
     taxStructure: 'individual',
     buildingEra: '1978',
-    mortgageRate: 6.5,
-    ltvPct: 70,
     yourSharePct: 50,
     mgmtFeePct: 5,
   };
@@ -181,7 +179,7 @@
         const disp = document.getElementById(id + '-val');
         if (disp) {
           if (key === 'projectMonths') disp.textContent = t().months(params[key]);
-          else if (['ltvPct','yourSharePct','mgmtFeePct','mortgageRate'].includes(key)) disp.textContent = params[key] + '%';
+          else if (['yourSharePct','mgmtFeePct'].includes(key)) disp.textContent = params[key] + '%';
           else if (key === 'propertySize') disp.textContent = params[key] + ' m²';
           else disp.textContent = fmt(params[key]);
         }
@@ -201,8 +199,6 @@
     bind('inp-reno-custom','renoCustomAmt','number');
     bind('inp-tax',      'taxStructure',  'select');
     bind('inp-era',      'buildingEra',   'select');
-    bind('inp-rate',     'mortgageRate',  'range');
-    bind('inp-ltv',      'ltvPct',        'range');
     bind('inp-share',    'yourSharePct',  'range');
     bind('inp-mgmt',     'mgmtFeePct',    'range');
   }
@@ -226,10 +222,51 @@
   }
 
   // ── Recalculate & render ───────────────────────────────────────────────────
+  function renderStockComparison(results) {
+    const tr = t();
+    const eq = results.equity;
+    const p  = results.partnership;
+
+    // Best scenario by annualROI
+    const best      = p.annualROI > eq.annualROI ? p : eq;
+    const bestLabel = best === p ? tr.scenarioPartner : tr.scenario100;
+
+    const capital    = best.capitalRequired;
+    const months     = results.params.projectMonths;
+    const flipProfit = best.netProfit;
+
+    // Stock profit: 8% annual compounded, prorated to deal duration
+    const stockProfit = Math.round(capital * (Math.pow(1.08, months / 12) - 1));
+
+    document.getElementById('stock-basis').textContent =
+      `${bestLabel} · ${fmt(capital)} · ${tr.months(months)}`;
+
+    const flipProfitEl = document.getElementById('stock-flip-profit');
+    flipProfitEl.textContent = fmt(flipProfit);
+    flipProfitEl.className = 'stock-row-val ' + (flipProfit >= stockProfit ? 'win-val' : 'lose-val');
+
+    document.getElementById('stock-market-profit').textContent = fmt(stockProfit);
+    document.getElementById('stock-flip-roi').textContent = best.annualROI.toFixed(1) + '%';
+
+    const diff      = flipProfit - stockProfit;
+    const verdictEl = document.getElementById('stock-verdict');
+    if (diff > 0) {
+      verdictEl.textContent = tr.stockFlipWins(fmt(diff));
+      verdictEl.className   = 'stock-verdict win';
+    } else if (diff < 0) {
+      verdictEl.textContent = tr.stockMarketWins(fmt(Math.abs(diff)));
+      verdictEl.className   = 'stock-verdict lose';
+    } else {
+      verdictEl.textContent = tr.stockTie;
+      verdictEl.className   = 'stock-verdict tie';
+    }
+  }
+
   function recalc() {
     const results = window.Calculator.calcAll(params);
     renderResults(results);
     renderSummaries(results);
+    renderStockComparison(results);
     renderCharts(results);
     updateSplitBar();
     updateEraBadge(results.eraInfo);
@@ -459,7 +496,7 @@
     params = {
       purchasePrice: 80000, propertySize: 60, renoQuality: 'mid',
       renoCustomAmt: 30000, arv: 150000, projectMonths: 9,
-      taxStructure: 'individual', buildingEra: '1978', mortgageRate: 6.5, ltvPct: 70,
+      taxStructure: 'individual', buildingEra: '1978',
       yourSharePct: 50, mgmtFeePct: 5,
     };
     syncControlsToParams();
@@ -502,8 +539,6 @@
     setRange('inp-size', params.propertySize);
     setRange('inp-arv', params.arv);
     setRange('inp-months', params.projectMonths);
-    setRange('inp-rate', params.mortgageRate);
-    setRange('inp-ltv', params.ltvPct);
     setRange('inp-share', params.yourSharePct);
     setRange('inp-mgmt', params.mgmtFeePct);
     const rq = document.getElementById('inp-reno-q');
@@ -517,8 +552,6 @@
     document.getElementById('inp-size-val').textContent    = params.propertySize + ' m²';
     document.getElementById('inp-arv-val').textContent     = fmt(params.arv);
     document.getElementById('inp-months-val').textContent  = t().months(params.projectMonths);
-    document.getElementById('inp-rate-val').textContent    = params.mortgageRate + '%';
-    document.getElementById('inp-ltv-val').textContent     = params.ltvPct + '%';
     document.getElementById('inp-share-val').textContent   = params.yourSharePct + '%';
     document.getElementById('inp-mgmt-val').textContent    = params.mgmtFeePct + '%';
   }
