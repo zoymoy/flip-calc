@@ -225,11 +225,14 @@
   function renderStockComparison(results) {
     const tr = t();
     const eq = results.equity;
-    const p  = results.partnership;
+    const ap = results.active;
+    const pp = results.passive;
 
-    // Best scenario by annualROI
-    const best      = p.annualROI > eq.annualROI ? p : eq;
-    const bestLabel = best === p ? tr.scenarioPartner : tr.scenario100;
+    // Best scenario by annualROI across all three
+    const best = [ap, pp, eq].reduce((a, b) => b.annualROI > a.annualROI ? b : a);
+    const bestLabel = best === ap ? tr.scenarioActive
+                    : best === pp ? tr.scenarioPassive
+                    : tr.scenario100;
 
     const capital    = best.capitalRequired;
     const months     = results.params.projectMonths;
@@ -303,7 +306,8 @@
   // ── Render results tables ──────────────────────────────────────────────────
   function renderResults(results) {
     renderEquity(results.equity, results.eraInfo);
-    renderPartnership(results.partnership, results.eraInfo);
+    renderActivePartner(results.active, results.eraInfo);
+    renderPassivePartner(results.passive, results.eraInfo);
   }
 
   function metricHTML(label, value, cls) {
@@ -343,32 +347,63 @@
     document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
-  function renderPartnership(r, eraInfo) {
+  function renderActivePartner(r, eraInfo) {
     const tr = t();
-    document.getElementById('p-metric-capital').textContent = fmt(r.capitalRequired);
-    document.getElementById('p-metric-profit').textContent  = fmt(r.yourNetProfit);
-    document.getElementById('p-metric-roi').textContent     = pctPlain(r.roi);
-    document.getElementById('p-metric-annroi').textContent  = pctPlain(r.annualROI);
+    const activePct  = Math.round(r.activeShare * 100);
+    const passivePct = Math.round((1 - r.activeShare) * 100);
+    document.getElementById('ap-metric-capital').textContent = fmt(r.capitalRequired);
+    document.getElementById('ap-metric-profit').textContent  = fmt(r.activeNetProfit);
+    document.getElementById('ap-metric-roi').textContent     = pctPlain(r.roi);
+    document.getElementById('ap-metric-annroi').textContent  = pctPlain(r.annualROI);
 
     const rows = [
       ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
       r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
-      ['td-lbl', tr.yourCapital + ' (' + Math.round(r.yourShare*100) + '%)', fmt(r.yourCapital)],
-      ['td-lbl', tr.partnerCapital,     fmt(r.partnerCapital)],
+      ['td-lbl', tr.activeCapitalLabel + ' (' + activePct + '%)',  fmt(r.activeCapital)],
+      ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
       ['divider', tr.sectionResults,    ''],
-      ['td-lbl', tr.netProfit + ' (total)', fmt(r.grossProfit - r.cgt + r.yourCGT - r.yourCGT + (r.cgt - r.yourCGT))],
-      ['divider', tr.yourNetProfit,     ''],
+      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit)],
+      ['divider', tr.scenarioActive,    ''],
       ['td-lbl', tr.mgmtFeeLabel,       fmt(r.mgmtFee),                  tr.tipMgmtFeeLabel],
-      ['td-lbl', tr.profitShareLabel,   fmt(r.yourProfitShare),           tr.tipProfitShareLabel],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.yourCGT),           tr.tipCapitalGainsTax],
-      ['profit-purple', tr.yourNetProfit, fmt(r.yourNetProfit),           tr.tipNetProfit],
-      ['roi-purple', tr.roiOnCapital,   pctPlain(r.roi),                 tr.tipRoiOnCapital],
-      ['roi-purple', tr.annualROI,      pctPlain(r.annualROI),           tr.tipAnnualROI],
-      ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),        tr.tipProfitMargin],
-      ['warn',   tr.capitalFreed,       fmt(r.capitalFreed),             tr.tipCapitalFreed],
+      ['td-lbl', tr.activeProfitShare,  fmt(r.activeProfitShare)],
+      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.activeCGT),          tr.tipCapitalGainsTax],
+      ['profit-purple', tr.netProfitLabel, fmt(r.activeNetProfit),        tr.tipNetProfit],
+      ['roi-purple', tr.roiOnCapital,   pctPlain(r.roi),                  tr.tipRoiOnCapital],
+      ['roi-purple', tr.annualROI,      pctPlain(r.annualROI),            tr.tipAnnualROI],
+      ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),         tr.tipProfitMargin],
     ].filter(Boolean);
-    document.getElementById('p-table').innerHTML = buildTableRows(rows);
-    document.getElementById('p-col-head')?.classList.toggle('col-head-loss', r.yourNetProfit < 0);
+    document.getElementById('ap-table').innerHTML = buildTableRows(rows);
+    document.getElementById('ap-col-head')?.classList.toggle('col-head-loss', r.activeNetProfit < 0);
+  }
+
+  function renderPassivePartner(r, eraInfo) {
+    const tr = t();
+    const passivePct = Math.round(r.passiveShare * 100);
+    const activePct  = Math.round((1 - r.passiveShare) * 100);
+    document.getElementById('pp-metric-capital').textContent = fmt(r.capitalRequired);
+    document.getElementById('pp-metric-profit').textContent  = fmt(r.passiveNetProfit);
+    document.getElementById('pp-metric-roi').textContent     = pctPlain(r.roi);
+    document.getElementById('pp-metric-annroi').textContent  = pctPlain(r.annualROI);
+
+    const rows = [
+      ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
+      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
+      ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
+      ['td-lbl', tr.activeCapitalLabel  + ' (' + activePct + '%)',  fmt(r.activeCapital)],
+      ['divider', tr.sectionResults,    ''],
+      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit)],
+      ['td-lbl', tr.mgmtFeeLabel + ' (→ ' + tr.scenarioActive + ')', '−' + fmt(r.mgmtFee), tr.tipMgmtFeeLabel],
+      ['td-lbl', tr.profitAfterMgmtLabel, fmt(r.profitAfterMgmt)],
+      ['divider', tr.scenarioPassive,   ''],
+      ['td-lbl', tr.passiveProfitShare, fmt(r.passiveProfitShare)],
+      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.passiveCGT),         tr.tipCapitalGainsTax],
+      ['blue-profit', tr.netProfitLabel, fmt(r.passiveNetProfit),         tr.tipNetProfit],
+      ['roi-blue', tr.roiOnCapital,     pctPlain(r.roi),                  tr.tipRoiOnCapital],
+      ['roi-blue', tr.annualROI,        pctPlain(r.annualROI),            tr.tipAnnualROI],
+      ['roi-blue', tr.profitMargin,     pctPlain(r.profitMargin),         tr.tipProfitMargin],
+    ].filter(Boolean);
+    document.getElementById('pp-table').innerHTML = buildTableRows(rows);
+    document.getElementById('pp-col-head')?.classList.toggle('col-head-loss', r.passiveNetProfit < 0);
   }
 
   function buildTableRows(rows) {
@@ -382,8 +417,10 @@
       const rowClass = {
         'profit': 'profit-row',
         'profit-purple': 'purple-profit',
+        'blue-profit': 'blue-profit',
         'roi': 'roi-row',
         'roi-purple': 'roi-row',
+        'roi-blue': 'roi-blue',
         'warn': 'warn-row',
         'neg': 'neg-row',
         'td-lbl': '',
@@ -435,14 +472,15 @@
 
   function renderSummaries(results) {
     const tr = t();
-    const { equity: eq, partnership: pt } = results;
+    const { equity: eq, active: ap, passive: pp } = results;
 
-    // helper to pass fmt into the result objects for use in template strings
     const withFmt = r => Object.assign({ fmt }, r);
     const eqF = withFmt(eq);
-    const ptF = withFmt(pt);
+    const apF = withFmt(ap);
+    const ppF = withFmt(pp);
 
-    const share = Math.round((params.yourSharePct || 50));
+    const passiveShare = Math.round(params.yourSharePct || 50);
+    const activeShare  = 100 - passiveShare;
     const label = tr.verdictLabel;
 
     // Equity
@@ -450,19 +488,29 @@
     if (eqEl) eqEl.innerHTML = buildSummaryHTML(
       tr.summaryEquityExplain(eqF),
       tr.summaryEquityPros,
-      tr.summaryEquityCons(eqF, ptF),
+      tr.summaryEquityCons(eqF, ppF),
       tr.summaryEquityVerdict(eqF),
       'teal', label
     );
 
-    // Partnership
-    const ptEl = document.getElementById('p-summary');
-    if (ptEl) ptEl.innerHTML = buildSummaryHTML(
-      tr.summaryPartnerExplain(eqF, share),
-      tr.summaryPartnerPros(eqF, ptF),
-      tr.summaryPartnerCons,
-      tr.summaryPartnerVerdict(ptF),
+    // Active Partner
+    const apEl = document.getElementById('ap-summary');
+    if (apEl) apEl.innerHTML = buildSummaryHTML(
+      tr.summaryActiveExplain(apF, activeShare),
+      tr.summaryActivePros(apF),
+      tr.summaryActiveCons,
+      tr.summaryActiveVerdict(apF),
       'purple', label
+    );
+
+    // Passive Partner
+    const ppEl = document.getElementById('pp-summary');
+    if (ppEl) ppEl.innerHTML = buildSummaryHTML(
+      tr.summaryPassiveExplain(ppF, passiveShare),
+      tr.summaryPassivePros(ppF),
+      tr.summaryPassiveCons,
+      tr.summaryPassiveVerdict(ppF),
+      'blue', label
     );
   }
 
@@ -675,7 +723,8 @@
       [tr.propertySize + ' / ' + tr.projectMonths, sr => `${sr.results.params.propertySize} m² / ${sr.results.params.projectMonths} mo`],
       [tr.netProfit + ' (100%)', sr => fmt(sr.results.equity.netProfit)],
       [tr.annualROI + ' (100%)', sr => sr.results.equity.annualROI.toFixed(1) + '%'],
-      [tr.netProfit + ' (' + tr.scenarioPartner + ')', sr => fmt(sr.results.partnership.netProfit)],
+      [tr.netProfit + ' (' + tr.scenarioActive + ')', sr => fmt(sr.results.active.netProfit)],
+      [tr.netProfit + ' (' + tr.scenarioPassive + ')', sr => fmt(sr.results.passive.netProfit)],
     ].map(([label, fn]) =>
       `<tr><td class="cmp-label">${label}</td>${scenarioResults.map(sr => `<td>${fn(sr)}</td>`).join('')}</tr>`
     ).join('');

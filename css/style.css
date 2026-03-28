@@ -374,12 +374,15 @@ input[type=range]::-moz-range-thumb {
 }
 .scenario-col-head.teal { background: var(--teal-light); }
 .scenario-col-head.purple { background: var(--purple-light); }
+.scenario-col-head.blue { background: var(--blue-light); }
 .col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .teal .col-dot { background: var(--teal); }
 .purple .col-dot { background: var(--purple); }
+.blue .col-dot { background: var(--blue); }
 .col-title { font-size: 13px; font-weight: 600; }
 .teal .col-title { color: #085041; }
 .purple .col-title { color: #3C3489; }
+.blue .col-title { color: #0f4a82; }
 
 /* Metric summary pills at top of column */
 .col-metrics {
@@ -401,6 +404,7 @@ input[type=range]::-moz-range-thumb {
 }
 .col-metric-val.positive { color: var(--teal); }
 .col-metric-val.accent-purple { color: var(--purple); }
+.col-metric-val.accent-blue { color: var(--blue); }
 
 /* Cost table */
 .cost-table { width: 100%; border-collapse: collapse; }
@@ -432,6 +436,9 @@ input[type=range]::-moz-range-thumb {
 .cost-table .roi-row td { color: var(--blue); }
 .cost-table .purple-profit td { color: var(--purple); font-weight: 600; }
 .cost-table .purple-profit td:last-child { font-size: 14px; }
+.cost-table .blue-profit td { color: var(--blue); font-weight: 600; }
+.cost-table .blue-profit td:last-child { font-size: 14px; }
+.cost-table .roi-blue td { color: var(--blue); }
 .cost-table .warn-row td { color: var(--amber); }
 .cost-table .fullwarn-row td { color: var(--amber); font-size: 0.82rem; line-height: 1.4; padding: 6px 8px; }
 .cost-table .neg-row td { color: var(--red); }
@@ -703,6 +710,7 @@ body.rtl .col-summary-list li::before { left: auto; right: 0; }
 }
 .teal .col-summary-verdict { background: var(--teal); }
 .purple .col-summary-verdict { background: var(--purple); }
+.blue .col-summary-verdict { background: var(--blue); }
 
 /* ── Scenario name input ── */
 .scenario-name-input { max-width: 300px; }

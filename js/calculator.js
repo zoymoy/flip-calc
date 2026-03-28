@@ -106,48 +106,81 @@ window.Calculator = {
   },
 
   /**
-   * Full calculation for Partnership scenario
+   * Full calculation for the Active Partner (manages deal, earns management fee + equity share)
    */
-  calcPartnership(params) {
+  calcActivePartner(params) {
     const base = this.calcEquity(params);
-    const yourShare = (params.yourSharePct || 50) / 100;
-    const mgmtRate = (params.mgmtFeePct || 0) / 100;
+    const passiveShare = (params.yourSharePct || 50) / 100;
+    const activeShare  = 1 - passiveShare;
+    const mgmtRate     = (params.mgmtFeePct || 0) / 100;
 
-    const yourCapital = base.totalInvestment * yourShare;
-    const partnerCapital = base.totalInvestment * (1 - yourShare);
-    const mgmtFee = Math.round(base.grossProfit * mgmtRate);
-    const profitAfterMgmt = base.grossProfit - mgmtFee;
-    const yourProfitShare = Math.round(profitAfterMgmt * yourShare);
-    const yourGrossProfit = mgmtFee + yourProfitShare;
-    const yourCGT = this.calcCGT(yourGrossProfit, params.projectMonths);
-    const yourNetProfit = yourGrossProfit - yourCGT;
+    const activeCapital    = base.totalInvestment * activeShare;
+    const passiveCapital   = base.totalInvestment * passiveShare;
+    const mgmtFee          = Math.round(base.grossProfit * mgmtRate);
+    const profitAfterMgmt  = base.grossProfit - mgmtFee;
+    const activeProfitShare  = Math.round(profitAfterMgmt * activeShare);
+    const activeGrossProfit  = mgmtFee + activeProfitShare;
+    const activeCGT          = this.calcCGT(activeGrossProfit, params.projectMonths);
+    const activeNetProfit    = activeGrossProfit - activeCGT;
 
-    const roi = yourCapital > 0 ? (yourNetProfit / yourCapital) * 100 : 0;
+    const roi      = activeCapital > 0 ? (activeNetProfit / activeCapital) * 100 : 0;
     const annualROI = params.projectMonths > 0 ? roi * (12 / params.projectMonths) : 0;
-    const capitalFreed = base.totalInvestment - yourCapital;
 
     return {
-      mode: 'partnership',
+      mode: 'active',
       ...base,
-      yourShare, yourCapital, partnerCapital,
-      mgmtFee, profitAfterMgmt, yourProfitShare,
-      yourGrossProfit, yourCGT, yourNetProfit,
-      capitalRequired: yourCapital,
-      capitalFreed,
-      netProfit: yourNetProfit,
+      activeShare, activeCapital, passiveCapital,
+      mgmtFee, profitAfterMgmt, activeProfitShare,
+      activeGrossProfit, activeCGT, activeNetProfit,
+      capitalRequired: activeCapital,
+      netProfit: activeNetProfit,
       roi, annualROI,
-      profitMargin: params.arv > 0 ? (yourNetProfit / params.arv) * 100 : 0,
+      profitMargin: params.arv > 0 ? (activeNetProfit / params.arv) * 100 : 0,
     };
   },
 
   /**
-   * Run equity and partnership scenarios and return combined result
+   * Full calculation for the Passive Partner (capital only, no management fee)
+   */
+  calcPassivePartner(params) {
+    const base = this.calcEquity(params);
+    const passiveShare = (params.yourSharePct || 50) / 100;
+    const activeShare  = 1 - passiveShare;
+    const mgmtRate     = (params.mgmtFeePct || 0) / 100;
+
+    const passiveCapital   = base.totalInvestment * passiveShare;
+    const activeCapital    = base.totalInvestment * activeShare;
+    const mgmtFee          = Math.round(base.grossProfit * mgmtRate);
+    const profitAfterMgmt  = base.grossProfit - mgmtFee;
+    const passiveProfitShare = Math.round(profitAfterMgmt * passiveShare);
+    const passiveCGT         = this.calcCGT(passiveProfitShare, params.projectMonths);
+    const passiveNetProfit   = passiveProfitShare - passiveCGT;
+
+    const roi      = passiveCapital > 0 ? (passiveNetProfit / passiveCapital) * 100 : 0;
+    const annualROI = params.projectMonths > 0 ? roi * (12 / params.projectMonths) : 0;
+
+    return {
+      mode: 'passive',
+      ...base,
+      passiveShare, passiveCapital, activeCapital,
+      mgmtFee, profitAfterMgmt, passiveProfitShare,
+      passiveCGT, passiveNetProfit,
+      capitalRequired: passiveCapital,
+      netProfit: passiveNetProfit,
+      roi, annualROI,
+      profitMargin: params.arv > 0 ? (passiveNetProfit / params.arv) * 100 : 0,
+    };
+  },
+
+  /**
+   * Run all scenarios and return combined result
    */
   calcAll(params) {
     const A = window.ASSUMPTIONS;
-    const equity      = this.calcEquity(params);
-    const partnership = this.calcPartnership(params);
+    const equity  = this.calcEquity(params);
+    const active  = this.calcActivePartner(params);
+    const passive = this.calcPassivePartner(params);
     const eraInfo = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
-    return { equity, partnership, params, eraInfo };
+    return { equity, active, passive, params, eraInfo };
   }
 };

@@ -77,6 +77,12 @@ window.TRANSLATIONS = {
     partnerCapital: "Partner's capital",
     mgmtFeeLabel: "Management fee",
     profitShareLabel: "Your profit share",
+    activeCapitalLabel: "Active capital",
+    passiveCapitalLabel: "Passive capital",
+    activeProfitShare: "Active profit share",
+    passiveProfitShare: "Passive profit share",
+    grossProfitLabel: "Gross profit",
+    profitAfterMgmtLabel: "Profit after mgmt fee",
     loanAmount: "Loan amount",
     ownEquity: "Own equity (down payment)",
     loanInterest: "Loan interest",
@@ -131,6 +137,8 @@ window.TRANSLATIONS = {
     // Table headers
     scenario100: "100% Self",
     scenarioPartner: "Partnership",
+    scenarioActive: "Active Partner",
+    scenarioPassive: "Passive Partner",
 
     // Charts
     chartROITitle: "ROI Comparison",
@@ -238,19 +246,33 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: (r) => `Best ROI on paper — but demands the most cash up front.`,
 
-    // Partnership summary
-    summaryPartnerExplain: (r, share) => `You fund ${share}% of the deal, your partner funds the rest. You split the profit proportionally${r.mgmtFee > 0 ? ', plus you earn a management fee for running the project' : ''}.`,
-    summaryPartnerPros: (r, p) => [
-      `Cuts your capital requirement roughly in half (${p.fmt(p.capitalRequired)} instead of ${p.fmt(r.capitalRequired)})`,
-      "Freed capital can fund a second deal simultaneously",
-      r.mgmtFee > 0 ? "Management fee rewards you for the extra work you contribute" : "Low friction — straightforward profit split",
+    // Active Partner summary
+    summaryActiveExplain: (r, share) => `Manages the deal and contributes ${share}% of the capital${r.mgmtFee > 0 ? ', earning a management fee on top of the equity split' : ''}.`,
+    summaryActivePros: (r) => [
+      "Management fee rewards effort and expertise",
+      "Higher ROI % than going solo thanks to leverage",
+      r.mgmtFee > 0 ? `Fee of ${r.fmt(r.mgmtFee)} is earned regardless of profit split` : "Direct equity share with no fee overhead",
     ],
-    summaryPartnerCons: [
-      "You take home less absolute profit than going solo",
-      "Requires a solid written partnership agreement",
+    summaryActiveCons: [
+      "Requires operational time and project management",
+      "Needs a solid written partnership agreement",
       "Partner misalignment can delay or derail the project",
     ],
-    summaryPartnerVerdict: (r) => `Smart leverage — same ROI %, half the capital, and a second deal becomes possible.`,
+    summaryActiveVerdict: (r) => `Highest return for the operator — less capital in, management fee on top.`,
+
+    // Passive Partner summary
+    summaryPassiveExplain: (r, share) => `Contributes ${share}% of the capital and earns a proportional share of profit after the management fee.`,
+    summaryPassivePros: (r) => [
+      `Lower capital required (${r.fmt(r.capitalRequired)}) — freed funds available for other investments`,
+      "Passive income — no operational involvement needed",
+      "ROI is predictable and tied directly to deal performance",
+    ],
+    summaryPassiveCons: [
+      "Management fee reduces your share of the profit pool",
+      "Depends on the active partner to execute well",
+      "Requires a solid written partnership agreement",
+    ],
+    summaryPassiveVerdict: (r) => `Pure capital play — deploy less, earn proportionally, stay hands-off.`,
 
     vsStockMarket:   "VS Stock Market",
     stockFlipCol:    "Flip",
@@ -335,6 +357,12 @@ window.TRANSLATIONS = {
     partnerCapital: "Capitalul partenerului",
     mgmtFeeLabel: "Comision management",
     profitShareLabel: "Cota ta din profit",
+    activeCapitalLabel: "Capital activ",
+    passiveCapitalLabel: "Capital pasiv",
+    activeProfitShare: "Cotă profit activ",
+    passiveProfitShare: "Cotă profit pasiv",
+    grossProfitLabel: "Profit brut",
+    profitAfterMgmtLabel: "Profit după comision",
     loanAmount: "Suma împrumutată",
     ownEquity: "Capital propriu (avans)",
     loanInterest: "Dobândă credit",
@@ -387,6 +415,8 @@ window.TRANSLATIONS = {
 
     scenario100: "100% propriu",
     scenarioPartner: "Parteneriat",
+    scenarioActive: "Partener Activ",
+    scenarioPassive: "Partener Pasiv",
 
     chartROITitle: "Comparație ROI",
     chartWaterfallTitle: "Cascada capitalului",
@@ -487,18 +517,31 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: () => `Cel mai mare profit absolut — dar necesită cel mai mult capital în avans.`,
 
-    summaryPartnerExplain: (r, share) => `Tu finanțezi ${share}% din tranzacție, partenerul finanțează restul. Împărțiți profitul proporțional${r.mgmtFee > 0 ? ", plus primești un comision de management" : ""}.`,
-    summaryPartnerPros: (r, p) => [
-      `Reduce necesarul de capital (${p.fmt(p.capitalRequired)} în loc de ${p.fmt(r.capitalRequired)})`,
-      "Capitalul eliberat poate finanța o a doua tranzacție simultan",
-      r.mgmtFee > 0 ? "Comisionul de management recompensează munca ta suplimentară" : "Structură simplă — împărțirea directă a profitului",
+    summaryActiveExplain: (r, share) => `Gestionează tranzacția și contribuie cu ${share}% din capital${r.mgmtFee > 0 ? ", câștigând un comision de management pe lângă cota din profit" : ""}.`,
+    summaryActivePros: (r) => [
+      "Comisionul de management recompensează efortul și expertiza",
+      "ROI % mai mare decât investiția solo datorită efectului de levier",
+      r.mgmtFee > 0 ? `Comision de ${r.fmt(r.mgmtFee)} indiferent de împărțirea profitului` : "Cotă directă din capital fără costuri suplimentare",
     ],
-    summaryPartnerCons: [
-      "Profit absolut mai mic față de investiția solo",
+    summaryActiveCons: [
+      "Necesită timp operațional și management de proiect",
       "Necesită un acord de parteneriat scris solid",
       "Dezacordurile cu partenerul pot întârzia sau bloca proiectul",
     ],
-    summaryPartnerVerdict: () => `Levier inteligent — același ROI %, jumătate din capital, o a doua tranzacție devine posibilă.`,
+    summaryActiveVerdict: (r) => `Cel mai bun randament pentru operator — capital mai mic, comision pe deasupra.`,
+
+    summaryPassiveExplain: (r, share) => `Contribuie cu ${share}% din capital și câștigă o cotă proporțională din profit după comisionul de management.`,
+    summaryPassivePros: (r) => [
+      `Capital necesar mai mic (${r.fmt(r.capitalRequired)}) — fonduri eliberate disponibile pentru alte investiții`,
+      "Venit pasiv — fără implicare operațională",
+      "ROI predictibil, direct legat de performanța tranzacției",
+    ],
+    summaryPassiveCons: [
+      "Comisionul de management reduce cota ta din profitul total",
+      "Depinde de execuția corectă a partenerului activ",
+      "Necesită un acord de parteneriat scris solid",
+    ],
+    summaryPassiveVerdict: (r) => `Investiție pură de capital — implici mai puțin, câștigi proporțional, rămâi pasiv.`,
 
     vsStockMarket:   "VS Piața Bursieră",
     stockFlipCol:    "Flip",
@@ -583,6 +626,12 @@ window.TRANSLATIONS = {
     partnerCapital: "הון השותף",
     mgmtFeeLabel: "דמי ניהול",
     profitShareLabel: "חלקך ברווח",
+    activeCapitalLabel: "הון פעיל",
+    passiveCapitalLabel: "הון פסיבי",
+    activeProfitShare: "חלק ברווח — פעיל",
+    passiveProfitShare: "חלק ברווח — פסיבי",
+    grossProfitLabel: "רווח גולמי",
+    profitAfterMgmtLabel: "רווח לאחר דמי ניהול",
     loanAmount: "סכום ההלוואה",
     ownEquity: "הון עצמי (מקדמה)",
     loanInterest: "ריבית הלוואה",
@@ -635,6 +684,8 @@ window.TRANSLATIONS = {
 
     scenario100: "100% עצמי",
     scenarioPartner: "שותפות",
+    scenarioActive: "שותף פעיל",
+    scenarioPassive: "שותף פסיבי",
 
     chartROITitle: "השוואת ROI",
     chartWaterfallTitle: "מפל הון",
@@ -735,18 +786,31 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: () => `הרווח הגבוה ביותר בפועל — אך דורש את ההון הגדול ביותר מראש.`,
 
-    summaryPartnerExplain: (r, share) => `אתה מממן ${share}% מהעסקה, השותף מממן את השאר. הרווח מתחלק באותו יחס${r.mgmtFee > 0 ? ", ובנוסף אתה מקבל דמי ניהול על ניהול הפרויקט" : ""}.`,
-    summaryPartnerPros: (r, p) => [
-      `חוצה את דרישת ההון (${p.fmt(p.capitalRequired)} במקום ${p.fmt(r.capitalRequired)})`,
-      "ההון הפנוי יכול לממן עסקה שנייה במקביל",
-      r.mgmtFee > 0 ? "דמי הניהול מתגמלים אותך על העבודה שאתה מביא" : "מבנה פשוט — חלוקת רווח ישירה",
+    summaryActiveExplain: (r, share) => `מנהל את העסקה ותורם ${share}% מההון${r.mgmtFee > 0 ? ", ומרוויח דמי ניהול על גבי חלקו מהרווח" : ""}.`,
+    summaryActivePros: (r) => [
+      "דמי הניהול מתגמלים על המאמץ והמומחיות",
+      "ROI % גבוה יותר מהשקעה עצמאית בזכות המינוף",
+      r.mgmtFee > 0 ? `עמלה של ${r.fmt(r.mgmtFee)} ללא קשר לחלוקת הרווח` : "חלק ישיר בהון ללא עמלות נוספות",
     ],
-    summaryPartnerCons: [
-      "רווח מוחלט נמוך יותר מאשר השקעה עצמאית",
+    summaryActiveCons: [
+      "דורש זמן תפעולי וניהול פרויקט",
       "נדרש הסכם שותפות כתוב ומחייב",
       "חוסר התאמה עם השותף עלול לעכב או לפגוע בפרויקט",
     ],
-    summaryPartnerVerdict: () => `מינוף חכם — אותו ROI, חצי הון, ועסקה שנייה הופכת לאפשרית.`,
+    summaryActiveVerdict: (r) => `התשואה הגבוהה ביותר למנהל — פחות הון, דמי ניהול בנוסף.`,
+
+    summaryPassiveExplain: (r, share) => `תורם ${share}% מההון ומרוויח חלק יחסי מהרווח לאחר דמי הניהול.`,
+    summaryPassivePros: (r) => [
+      `הון נדרש נמוך יותר (${r.fmt(r.capitalRequired)}) — כספים פנויים לאחר השקעות`,
+      "הכנסה פסיבית — ללא מעורבות תפעולית",
+      "ROI צפוי ותלוי ישירות בביצועי העסקה",
+    ],
+    summaryPassiveCons: [
+      "דמי הניהול מקטינים את חלקך מסך הרווח",
+      "תלוי בביצוע טוב של השותף הפעיל",
+      "נדרש הסכם שותפות כתוב ומחייב",
+    ],
+    summaryPassiveVerdict: (r) => `השקעת הון טהורה — פחות כסף, רווח יחסי, ללא מעורבות.`,
 
     vsStockMarket:   "מול שוק ההון",
     stockFlipCol:    "פליפ",

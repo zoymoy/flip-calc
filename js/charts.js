@@ -28,25 +28,25 @@ window.Charts = {
     this.destroy(canvasId);
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    const { equity, partnership } = results;
+    const { equity, active, passive } = results;
 
     this._charts[canvasId] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: [t.scenario100, t.scenarioPartner],
+        labels: [t.scenario100, t.scenarioActive, t.scenarioPassive],
         datasets: [
           {
             label: t.roiOnCapital,
-            data: [equity.roi, partnership.roi].map(v => +v.toFixed(1)),
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg],
-            borderColor: [this.colors.teal.border, this.colors.purple.border],
+            data: [equity.roi, active.roi, passive.roi].map(v => +v.toFixed(1)),
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg],
+            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
             borderWidth: 1.5, borderRadius: 6,
           },
           {
             label: t.annualROI,
-            data: [equity.annualROI, partnership.annualROI].map(v => +v.toFixed(1)),
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg].map(c => c.replace('0.85','0.35')),
-            borderColor: [this.colors.teal.border, this.colors.purple.border],
+            data: [equity.annualROI, active.annualROI, passive.annualROI].map(v => +v.toFixed(1)),
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg].map(c => c.replace('0.85','0.35')),
+            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
             borderWidth: 1, borderRadius: 6, borderDash: [4,2],
           }
         ]
@@ -73,25 +73,25 @@ window.Charts = {
     this.destroy(canvasId);
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    const { equity, partnership } = results;
+    const { equity, active, passive } = results;
 
     this._charts[canvasId] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: [t.scenario100, t.scenarioPartner],
+        labels: [t.scenario100, t.scenarioActive, t.scenarioPassive],
         datasets: [
           {
             label: t.capitalRequired,
-            data: [equity.capitalRequired, partnership.capitalRequired],
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg].map(c=>c.replace('0.85','0.5')),
-            borderColor: [this.colors.teal.border, this.colors.purple.border],
+            data: [equity.capitalRequired, active.capitalRequired, passive.capitalRequired],
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg].map(c=>c.replace('0.85','0.5')),
+            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
             borderWidth: 1.5, borderRadius: 6,
           },
           {
             label: t.netProfitLabel,
-            data: [equity.netProfit, partnership.netProfit],
-            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg],
-            borderColor: [this.colors.teal.border, this.colors.purple.border],
+            data: [equity.netProfit, active.netProfit, passive.netProfit],
+            backgroundColor: [this.colors.teal.bg, this.colors.purple.bg, this.colors.blue.bg],
+            borderColor: [this.colors.teal.border, this.colors.purple.border, this.colors.blue.border],
             borderWidth: 1.5, borderRadius: 6,
           }
         ]
@@ -186,10 +186,17 @@ window.Charts = {
         borderWidth: 1.5, borderRadius: 6,
       },
       {
-        label: t.scenarioPartner,
-        data: scenarioResults.map(sr => val(sr, 'partnership')),
+        label: t.scenarioActive,
+        data: scenarioResults.map(sr => val(sr, 'active')),
         backgroundColor: this.colors.purple.bg,
         borderColor: this.colors.purple.border,
+        borderWidth: 1.5, borderRadius: 6,
+      },
+      {
+        label: t.scenarioPassive,
+        data: scenarioResults.map(sr => val(sr, 'passive')),
+        backgroundColor: this.colors.blue.bg,
+        borderColor: this.colors.blue.border,
         borderWidth: 1.5, borderRadius: 6,
       },
     ];
