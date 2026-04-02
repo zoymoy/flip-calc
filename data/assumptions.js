@@ -39,9 +39,11 @@ window.ASSUMPTIONS = {
   landRegistryFee: 800,        // fixed ~€800 (OCPI cadastre registration)
 
   // RENOVATION COSTS (per m² — INS 2025 index)
-  renoLow: 300,      // basic refresh (paint, floors, minor works) €/m²
-  renoMid: 500,      // standard full renovation €/m²
-  renoHigh: 800,     // premium finish €/m²
+  renoLow:     300,  // basic refresh (paint, floors, minor works) €/m²
+  renoMidLow:  400,  // mid-basic €/m²
+  renoMid:     500,  // standard full renovation €/m²
+  renoMidHigh: 600,  // mid-premium €/m²
+  renoHigh:    800,  // premium finish €/m²
 
   // HOLDING COSTS (per month while owning)
   utilityMonthly: 80,          // electricity, water, gas (vacant)
@@ -141,7 +143,9 @@ window.ASSUMPTION_DEFAULTS = Object.freeze({
   buyerAgentPct:             window.ASSUMPTIONS.buyerAgentPct,
   landRegistryFee:           window.ASSUMPTIONS.landRegistryFee,
   renoLow:                   window.ASSUMPTIONS.renoLow,
+  renoMidLow:                window.ASSUMPTIONS.renoMidLow,
   renoMid:                   window.ASSUMPTIONS.renoMid,
+  renoMidHigh:               window.ASSUMPTIONS.renoMidHigh,
   renoHigh:                  window.ASSUMPTIONS.renoHigh,
   utilityMonthly:            window.ASSUMPTIONS.utilityMonthly,
   propertyTaxMonthly:        window.ASSUMPTIONS.propertyTaxMonthly,

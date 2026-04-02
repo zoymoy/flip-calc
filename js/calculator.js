@@ -7,9 +7,7 @@ window.Calculator = {
 
   /**
    * Calculate renovation cost based on quality preset or custom value.
-   * Returns { base, hidden, total } where hidden is an era-based add-on.
-   * Hidden cost only applies to preset tiers — custom amounts are assumed to already
-   * account for building-specific issues.
+   * Returns { base, total }.
    */
   calcReno(params) {
     const A = window.ASSUMPTIONS;
@@ -17,12 +15,10 @@ window.Calculator = {
     if (params.renoQuality === 'custom') {
       base = params.renoCustomAmt || 0;
     } else {
-      const rates = { low: A.renoLow, mid: A.renoMid, high: A.renoHigh };
+      const rates = { low: A.renoLow, midLow: A.renoMidLow, mid: A.renoMid, midHigh: A.renoMidHigh, high: A.renoHigh };
       base = (rates[params.renoQuality] || A.renoMid) * (params.propertySize || 60);
     }
-    const era = A.BUILDING_ERAS[params.buildingEra] || A.BUILDING_ERAS['1978'];
-    const hidden = params.renoQuality !== 'custom' ? (era.renoHiddenCost || 0) : 0;
-    return { base, hidden, total: base + hidden };
+    return { base, total: base };
   },
 
   /**
@@ -66,10 +62,7 @@ window.Calculator = {
   calcCGT(grossProfit, projectMonths) {
     const A = window.ASSUMPTIONS;
     if (grossProfit <= 0) return 0;
-    const threshold = A.cgtDurationThresholdMonths || 36;
-    const rate = (projectMonths || 0) > threshold
-      ? A.cgtIndividualLongPct   // > 3 years → 1%
-      : A.cgtIndividualShortPct; // ≤ 3 years → 3%
+    const rate = A.cgtIndividualShortPct; // 3% — flips are short-term by definition
     return Math.round(grossProfit * rate / 100);
   },
 
@@ -94,7 +87,7 @@ window.Calculator = {
     return {
       mode: 'equity',
       purchasePrice: params.purchasePrice,
-      acq, reno: renoObj.base, renoHidden: renoObj.hidden, holding, saleCosts,
+      acq, reno: renoObj.base, holding, saleCosts,
       totalInvestment,
       arv: params.arv,
       grossProfit,

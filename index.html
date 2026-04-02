@@ -20,8 +20,7 @@
   <nav class="topbar-nav" id="topbar-nav">
     <button class="nav-btn active" data-page="scenarios" data-i18n="navScenarios">Scenarios</button>
     <button class="nav-btn" data-page="compare"   data-i18n="navCompare">Compare</button>
-    <button class="nav-btn" data-page="listings"   data-i18n="navListings">Listings</button>
-    <button class="nav-btn" data-page="assumptions" data-i18n="navAssumptions">Assumptions</button>
+<button class="nav-btn" data-page="assumptions" data-i18n="navAssumptions">Assumptions</button>
     <button class="nav-btn" data-page="guide"     data-i18n="navGuide">Guide</button>
     <button class="nav-btn" data-page="about"     data-i18n="navAbout">About</button>
   </nav>
@@ -59,8 +58,8 @@
       <input type="text" id="scenario-name" data-i18n-ph="scenarioPlaceholder" placeholder="e.g. Floreasca 2BR deal" class="scenario-name-input">
       <button class="btn btn-primary" id="btn-save" data-i18n="saveScenario">Save Scenario</button>
       <button class="btn" id="btn-new" data-i18n="newScenario">+ New Scenario</button>
-      <button class="btn btn-ghost" id="btn-share" data-i18n="shareScenario">Share Link</button>
-      <button class="btn btn-ghost" id="btn-print" data-i18n="printBtn">Print / PDF</button>
+<button class="btn btn-ghost" id="btn-print" data-i18n="printBtn">Print / PDF</button>
+      <a class="btn btn-ghost" href="https://docs.google.com/spreadsheets/d/1uDY58OpooOP0ieuD65d8DR3OdJhth0T_80rLxTTsD0U/edit?gid=0#gid=0" target="_blank" rel="noopener" data-i18n="listingsSheetLink">📋 Listings</a>
     </div>
 
     <div class="layout-cols">
@@ -74,7 +73,7 @@
 
           <div class="field">
             <div class="range-row"><span class="range-label" data-i18n="purchasePrice">Purchase Price (€)<span class="tip-icon" data-i18n-tip="tipPurchasePrice" tabindex="0">ⓘ</span></span><span class="range-val" id="inp-price-val">€80,000</span></div>
-            <input type="range" id="inp-price" min="40000" max="140000" step="1000" value="80000">
+            <input type="range" id="inp-price" min="40000" max="160000" step="1000" value="80000">
           </div>
 
           <div class="field">
@@ -85,8 +84,10 @@
           <div class="field">
             <label data-i18n="renoQuality">Renovation Quality<span class="tip-icon" data-i18n-tip="tipRenoQuality" tabindex="0">ⓘ</span></label>
             <select id="inp-reno-q">
-              <option value="low"    data-i18n="renoLow">Basic (€300/m²)</option>
+              <option value="low"     data-i18n="renoLow">Basic (€300/m²)</option>
+              <option value="midLow" data-i18n="renoMidLow">Mid-Basic (€400/m²)</option>
               <option value="mid" selected data-i18n="renoMid">Standard (€500/m²)</option>
+              <option value="midHigh" data-i18n="renoMidHigh">Mid-Premium (€600/m²)</option>
               <option value="high"   data-i18n="renoHigh">Premium (€800/m²)</option>
               <option value="custom" data-i18n="renoCustom">Custom</option>
             </select>
@@ -333,32 +334,6 @@
 
 
 <!-- ══════════════════════════════════════════════════════
-     PAGE: LISTINGS
-══════════════════════════════════════════════════════ -->
-<div id="page-listings" class="page">
-  <div class="hero">
-    <div class="hero-inner">
-      <h2 data-i18n="listingsTitle">Property Listings</h2>
-      <p class="hero-sub" data-i18n="listingsSubtitle">Browse from your Google Sheet, load into the calculator, save a scenario and copy the link back.</p>
-    </div>
-  </div>
-  <div class="content">
-    <div class="card">
-      <div class="card-section" data-i18n="listingsConfig">Sheet Configuration</div>
-      <div class="listings-url-row">
-        <input type="url" id="listings-url-input" class="listings-url-input" data-i18n-ph="listingsUrlPlaceholder" placeholder="Paste Google Sheets URL…">
-        <button class="btn btn-primary btn-sm" id="btn-listings-save" data-i18n="listingsSaveUrl">Save</button>
-        <button class="btn btn-sm" id="btn-listings-refresh" data-i18n="listingsRefresh">Refresh</button>
-      </div>
-      <p class="listings-url-hint" data-i18n="listingsUrlHint">Publish your sheet first: File → Share → Publish to web → CSV. Then paste the URL above.</p>
-    </div>
-    <div id="listings-status" class="hidden"></div>
-    <div id="listings-table-wrap"></div>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════
      PAGE: ASSUMPTIONS
 ══════════════════════════════════════════════════════ -->
 <div id="page-assumptions" class="page">
@@ -487,7 +462,6 @@
 <script src="js/translations.js"></script>
 <script src="js/calculator.js"></script>
 <script src="js/storage.js"></script>
-<script src="js/listings.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/app.js"></script>
 </body>

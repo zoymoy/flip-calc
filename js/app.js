@@ -346,7 +346,6 @@
       ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
       ['td-lbl', tr.landRegistry,       fmt(r.acq.landRegistry),         tr.tipLandRegistry],
       ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
-      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
       ['td-lbl', tr.utilityHolding,     fmt(r.holding.utility)],
       ['td-lbl', tr.propTaxHolding,     fmt(r.holding.propTax)],
       ['td-lbl', tr.maintHolding,       fmt(r.holding.maint)],
@@ -375,7 +374,6 @@
 
     const rows = [
       ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
-      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
       ['td-lbl', tr.activeCapitalLabel + ' (' + activePct + '%)',  fmt(r.activeCapital)],
       ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
       ['divider', tr.sectionResults,    ''],
@@ -404,7 +402,6 @@
 
     const rows = [
       ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
-      r.renoHidden > 0 && ['warn', tr.hiddenRenoLabel, fmt(r.renoHidden), tr.tipHiddenReno],
       ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
       ['td-lbl', tr.activeCapitalLabel  + ' (' + activePct + '%)',  fmt(r.activeCapital)],
       ['divider', tr.sectionResults,    ''],
@@ -542,8 +539,7 @@
   function bindScenarioActions() {
     document.getElementById('btn-save')?.addEventListener('click', saveScenario);
     document.getElementById('btn-new')?.addEventListener('click', newScenario);
-    document.getElementById('btn-share')?.addEventListener('click', shareScenario);
-    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+document.getElementById('btn-print')?.addEventListener('click', () => window.print());
     document.getElementById('btn-reset-assumptions')?.addEventListener('click', resetAssumptions);
     document.getElementById('btn-listings-save')?.addEventListener('click', saveListingsUrl);
     document.getElementById('btn-listings-refresh')?.addEventListener('click', renderListingsPage);
@@ -748,10 +744,10 @@
   // ── Assumptions page ───────────────────────────────────────────────────────
   const EDITABLE_ASSUMPTION_KEYS = [
     'notaryFeePct','buyerAgentPct','landRegistryFee','transferTaxIndividualPct','bankSetupFeePct',
-    'renoLow','renoMid','renoHigh',
+    'renoLow','renoMidLow','renoMid','renoMidHigh','renoHigh',
     'utilityMonthly','propertyTaxMonthly','buildingMaintMonthly',
     'sellerAgentPct','sellerNotaryPct',
-    'cgtIndividualShortPct','cgtIndividualLongPct',
+    'cgtIndividualShortPct',
     'avgPricePerSqmBucharest','avgRentalYieldBucharest','avgDaysOnMarket',
     'avgPriceGrowthAnnual','mortgageRateDefault','ltvMaxForeigner',
   ];
@@ -791,9 +787,11 @@
 
     const renoEl = document.getElementById('assumptions-reno');
     if (renoEl) renoEl.innerHTML = [
-      erow(tr.renoLow,  'renoLow',  '€', '/m²', 10),
-      erow(tr.renoMid,  'renoMid',  '€', '/m²', 10),
-      erow(tr.renoHigh, 'renoHigh', '€', '/m²', 10),
+      erow(tr.renoLow,     'renoLow',     '€', '/m²', 10),
+      erow(tr.renoMidLow,  'renoMidLow',  '€', '/m²', 10),
+      erow(tr.renoMid,     'renoMid',     '€', '/m²', 10),
+      erow(tr.renoMidHigh, 'renoMidHigh', '€', '/m²', 10),
+      erow(tr.renoHigh,    'renoHigh',    '€', '/m²', 10),
     ].join('');
 
     const holdEl = document.getElementById('assumptions-hold');
@@ -812,7 +810,6 @@
     const taxEl = document.getElementById('assumptions-tax');
     if (taxEl) taxEl.innerHTML = [
       erow(tr.assumptionsIndividual,     'cgtIndividualShortPct', '', '%', 0.1),
-      erow(tr.assumptionsIndividualLong, 'cgtIndividualLongPct',  '', '%', 0.1),
     ].join('');
 
     const mktEl = document.getElementById('assumptions-market');
