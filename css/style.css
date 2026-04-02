@@ -613,6 +613,25 @@ body.rtl .cost-table td:last-child { text-align: left; }
   margin-top: 1.5rem;
 }
 
+/* ── ARV mode toggle ── */
+.arv-mode-row {
+  display: flex;
+  gap: 16px;
+  margin: 6px 0 6px;
+}
+.arv-mode-opt {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-2);
+}
+.arv-mode-opt input[type="radio"] {
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+
 /* ── Misc ── */
 .hidden { display: none !important; }
 .mt-1 { margin-top: 0.75rem; }

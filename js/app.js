@@ -16,6 +16,8 @@
     renoQuality: 'mid',
     renoCustomAmt: 30000,
     arv: 150000,
+    arvMode: 'total',
+    arvPricePerSqm: 2500,
     projectMonths: 9,
     taxStructure: 'individual',
     buildingEra: '1978',
@@ -29,6 +31,8 @@
     renoQuality: 'mid',
     renoCustomAmt: 30000,
     arv: 150000,
+    arvMode: 'total',
+    arvPricePerSqm: 2500,
     projectMonths: 9,
     taxStructure: 'individual',
     buildingEra: '1978',
@@ -211,6 +215,18 @@
     bind('inp-price',    'purchasePrice', 'range');
     bind('inp-size',     'propertySize',  'range');
     bind('inp-arv',      'arv',           'range');
+    bind('inp-arv-persqm', 'arvPricePerSqm', 'number');
+    document.querySelectorAll('input[name="arv-mode"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        params.arvMode = radio.value;
+        if (radio.value === 'total') {
+          const slider = document.getElementById('inp-arv');
+          if (slider) params.arv = parseFloat(slider.value);
+        }
+        syncArvUI();
+        recalc();
+      });
+    });
     bind('inp-months',   'projectMonths', 'range');
     bind('inp-reno-q',   'renoQuality',   'select');
     bind('inp-reno-custom','renoCustomAmt','number');
@@ -236,6 +252,18 @@
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') document.querySelectorAll('.tip-icon.tip-active').forEach(el => el.classList.remove('tip-active'));
     });
+  }
+
+  // ── ARV mode UI sync ───────────────────────────────────────────────────────
+  function syncArvUI() {
+    const isPerSqm = params.arvMode === 'perSqm';
+    document.getElementById('inp-arv').classList.toggle('hidden', isPerSqm);
+    document.getElementById('arv-persqm-field').classList.toggle('hidden', !isPerSqm);
+    document.querySelectorAll('input[name="arv-mode"]').forEach(r => {
+      r.checked = (r.value === (params.arvMode || 'total'));
+    });
+    const perSqmEl = document.getElementById('inp-arv-persqm');
+    if (perSqmEl) perSqmEl.value = params.arvPricePerSqm || 2500;
   }
 
   // ── Recalculate & render ───────────────────────────────────────────────────
@@ -286,6 +314,10 @@
   }
 
   function recalc() {
+    if (params.arvMode === 'perSqm') {
+      params.arv = Math.round((params.arvPricePerSqm || 0) * (params.propertySize || 60));
+      document.getElementById('inp-arv-val').textContent = fmt(params.arv);
+    }
     const results = window.Calculator.calcAll(params);
     renderResults(results);
     renderSummaries(results);
@@ -616,6 +648,7 @@ document.getElementById('btn-print')?.addEventListener('click', () => window.pri
     document.getElementById('inp-months-val').textContent  = t().months(params.projectMonths);
     document.getElementById('inp-share-val').textContent   = params.yourSharePct + '%';
     document.getElementById('inp-mgmt-val').textContent    = params.mgmtFeePct + '%';
+    syncArvUI();
   }
 
   function renderSavedList() {
@@ -711,6 +744,9 @@ document.getElementById('btn-print')?.addEventListener('click', () => window.pri
       const data = window.Storage.load(name);
       if (!data) return null;
       const { savedAt, ...p } = data;
+      if (p.arvMode === 'perSqm' && p.arvPricePerSqm && p.propertySize) {
+        p.arv = Math.round(p.arvPricePerSqm * p.propertySize);
+      }
       return { name, results: window.Calculator.calcAll(p) };
     }).filter(Boolean);
 

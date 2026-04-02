@@ -100,7 +100,14 @@
 
           <div class="field">
             <div class="range-row"><span class="range-label" data-i18n="arv">After Repair Value — ARV (€)<span class="tip-icon" data-i18n-tip="tipArv" tabindex="0">ⓘ</span></span><span class="range-val" id="inp-arv-val">€150,000</span></div>
+            <div class="arv-mode-row">
+              <label class="arv-mode-opt"><input type="radio" name="arv-mode" value="total" checked> <span data-i18n="arvModeTotal">Total (€)</span></label>
+              <label class="arv-mode-opt"><input type="radio" name="arv-mode" value="perSqm"> <span data-i18n="arvModePerSqm">€/m²</span></label>
+            </div>
             <input type="range" id="inp-arv" min="50000" max="350000" step="5000" value="150000">
+            <div id="arv-persqm-field" class="hidden">
+              <input type="number" id="inp-arv-persqm" value="2500" min="500" max="10000" step="50">
+            </div>
           </div>
 
           <div class="field">
