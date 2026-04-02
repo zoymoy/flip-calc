@@ -8,6 +8,21 @@
   // ── State ──────────────────────────────────────────────────────────────────
   let lang = 'en';
   let currentPage = 'scenarios';
+  let _cachedListings = [];
+
+  const DEFAULT_PARAMS = {
+    purchasePrice: 80000,
+    propertySize: 60,
+    renoQuality: 'mid',
+    renoCustomAmt: 30000,
+    arv: 150000,
+    projectMonths: 9,
+    taxStructure: 'individual',
+    buildingEra: '1978',
+    yourSharePct: 50,
+    mgmtFeePct: 5,
+  };
+
   let params = {
     purchasePrice: 80000,
     propertySize: 60,
@@ -117,6 +132,7 @@
     });
     document.getElementById('topbar-nav')?.classList.remove('open');
     if (page === 'compare') renderComparePage();
+    if (page === 'listings') renderListingsPage();
     if (page === 'assumptions') renderAssumptionsPage();
     if (page === 'guide') renderGuidePage();
   }
@@ -135,6 +151,7 @@
         recalc();
         renderSavedList();
         if (currentPage === 'compare') renderComparePage();
+        if (currentPage === 'listings') renderListingsPage();
         if (currentPage === 'assumptions') renderAssumptionsPage();
         if (currentPage === 'guide') renderGuidePage();
       });
@@ -528,6 +545,8 @@
     document.getElementById('btn-share')?.addEventListener('click', shareScenario);
     document.getElementById('btn-print')?.addEventListener('click', () => window.print());
     document.getElementById('btn-reset-assumptions')?.addEventListener('click', resetAssumptions);
+    document.getElementById('btn-listings-save')?.addEventListener('click', saveListingsUrl);
+    document.getElementById('btn-listings-refresh')?.addEventListener('click', renderListingsPage);
   }
 
   function saveScenario() {
@@ -541,12 +560,7 @@
   function newScenario() {
     const nameEl = document.getElementById('scenario-name');
     if (nameEl) nameEl.value = '';
-    params = {
-      purchasePrice: 80000, propertySize: 60, renoQuality: 'mid',
-      renoCustomAmt: 30000, arv: 150000, projectMonths: 9,
-      taxStructure: 'individual', buildingEra: '1978',
-      yourSharePct: 50, mgmtFeePct: 5,
-    };
+    params = { ...DEFAULT_PARAMS };
     syncControlsToParams();
     recalc();
   }
@@ -949,7 +963,138 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // ── Listings page ──────────────────────────────────────────────────────────
+  function saveListingsUrl() {
+    const input = document.getElementById('listings-url-input');
+    const url = (input?.value || '').trim();
+    if (!url || !window.Listings.normalizeUrl(url)) {
+      showToast(t().listingsErrorInvalidUrl);
+      return;
+    }
+    window.Listings.saveSheetUrl(url);
+    renderListingsPage();
+  }
+
+  async function renderListingsPage() {
+    const urlInput = document.getElementById('listings-url-input');
+    if (urlInput && !urlInput.value) urlInput.value = window.Listings.loadSheetUrl();
+
+    const statusEl = document.getElementById('listings-status');
+    const wrapEl   = document.getElementById('listings-table-wrap');
+    if (!statusEl || !wrapEl) return;
+
+    statusEl.textContent = t().listingsLoading;
+    statusEl.className   = 'listings-status-loading';
+    wrapEl.innerHTML     = '';
+
+    const { listings, error } = await window.Listings.fetchListings();
+
+    if (error) {
+      const msgs = {
+        invalidUrl:  t().listingsErrorInvalidUrl,
+        timeout:     t().listingsErrorTimeout,
+        fetchFailed: t().listingsErrorFetchFailed,
+      };
+      statusEl.textContent = msgs[error] || error;
+      statusEl.className   = 'listings-status-error';
+      return;
+    }
+
+    statusEl.className = 'hidden';
+
+    if (!listings.length) {
+      wrapEl.innerHTML = `<div class="listings-empty">${t().listingsEmpty}</div>`;
+      return;
+    }
+
+    _cachedListings  = listings;
+    wrapEl.innerHTML = buildListingsTable(listings);
+  }
+
+  function buildListingsTable(listings) {
+    const tr    = t();
+    const saved = window.Storage.list();
+
+    const colKeys    = ['Name','Price','Reno','ARV','Status','Type','Contact','Notes','Link','FlipCalc'];
+    const headerHTML = colKeys.map(k => `<th>${escHtml(tr['listingsCol' + k] || k)}</th>`).join('');
+
+    const rowsHTML = listings.map((l, idx) => {
+      const match       = saved.find(s => s._listingName && s._listingName === l._listingName);
+      const copyEnabled = !!match;
+      const scenarioName = match ? match.name : '';
+
+      const statusSlug = (l._listingStatus || '')
+        .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const statusBadge = l._listingStatus
+        ? `<span class="listing-badge listing-badge-${statusSlug}">${escHtml(l._listingStatus)}</span>`
+        : '—';
+
+      const extLink = l._listingLink
+        ? `<a href="${escHtml(l._listingLink)}" target="_blank" rel="noopener" class="listings-ext-link">↗</a>`
+        : '—';
+
+      const copyBtn = copyEnabled
+        ? `<button class="btn btn-sm listing-copy-btn" onclick="App.copyListingScenarioLink('${escHtml(scenarioName)}')" title="${escHtml(tr.listingsCopyLink)}">📋</button>`
+        : `<button class="btn btn-sm listing-copy-btn" disabled title="${escHtml(tr.listingsCopyLink)}">📋</button>`;
+
+      return `<tr>
+        <td class="listings-name">${escHtml(l._listingName || '—')}</td>
+        <td>${l.purchasePrice ? fmt(l.purchasePrice) : '—'}</td>
+        <td>${l.renoCustomAmt ? fmt(l.renoCustomAmt) : '—'}</td>
+        <td>${l.arv ? fmt(l.arv) : '—'}</td>
+        <td>${statusBadge}</td>
+        <td>${escHtml(l._listingType || '—')}</td>
+        <td>${escHtml(l._listingContact || '—')}</td>
+        <td class="listings-notes" title="${escHtml(l._listingNotes || '')}">${escHtml(l._listingNotes || '—')}</td>
+        <td>${extLink}</td>
+        <td class="listings-actions">
+          <button class="btn btn-sm btn-primary" onclick="App.loadFromListing(${idx})">${escHtml(tr.listingsLoadBtn)}</button>
+          ${copyBtn}
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="listings-table-scroll">
+      <table class="listings-table">
+        <thead><tr>${headerHTML}</tr></thead>
+        <tbody>${rowsHTML}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function loadFromListing(idx) {
+    const l = _cachedListings[idx];
+    if (!l) return;
+
+    params.purchasePrice = l.purchasePrice || params.purchasePrice;
+    params.renoCustomAmt = l.renoCustomAmt || params.renoCustomAmt;
+    params.renoQuality   = 'custom';
+    if (l.arv          != null) params.arv          = l.arv;
+    if (l.propertySize != null) params.propertySize = l.propertySize;
+    params._listingName    = l._listingName;
+    params._listingLink    = l._listingLink;
+    params._listingContact = l._listingContact;
+    params._listingType    = l._listingType;
+    params._listingStatus  = l._listingStatus;
+    params._listingNotes   = l._listingNotes;
+    params._listingDate    = l._listingDate;
+
+    const nameEl = document.getElementById('scenario-name');
+    if (nameEl && l._listingName) nameEl.value = l._listingName;
+
+    syncControlsToParams();
+    recalc();
+    showPage('scenarios');
+    showToast(t().listingLoaded);
+  }
+
+  function copyListingScenarioLink(scenarioName) {
+    shareScenarioByName(scenarioName);
+    // shareScenarioByName shows "linkCopied" — override immediately with listing-specific message
+    showToast(t().listingsCopyLinkDone);
+  }
+
   // ── Public API (for inline onclick) ───────────────────────────────────────
-  window.App = { loadScenario, deleteScenario, shareScenarioByName };
+  window.App = { loadScenario, deleteScenario, shareScenarioByName, loadFromListing, copyListingScenarioLink };
 
 })();

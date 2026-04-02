@@ -107,4 +107,13 @@ window.Storage = {
         .catch(e => console.warn('[FlipCalc] Assumptions reset failed:', e));
     }
   },
+
+  // ── Google Sheet URL: local-only (per-device setting) ─────────────────────
+  saveSheetUrl(url) {
+    localStorage.setItem('flipcalc_sheet_url', url || '');
+  },
+
+  loadSheetUrl() {
+    return localStorage.getItem('flipcalc_sheet_url') || '';
+  },
 };

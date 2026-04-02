@@ -20,6 +20,7 @@
   <nav class="topbar-nav" id="topbar-nav">
     <button class="nav-btn active" data-page="scenarios" data-i18n="navScenarios">Scenarios</button>
     <button class="nav-btn" data-page="compare"   data-i18n="navCompare">Compare</button>
+    <button class="nav-btn" data-page="listings"   data-i18n="navListings">Listings</button>
     <button class="nav-btn" data-page="assumptions" data-i18n="navAssumptions">Assumptions</button>
     <button class="nav-btn" data-page="guide"     data-i18n="navGuide">Guide</button>
     <button class="nav-btn" data-page="about"     data-i18n="navAbout">About</button>
@@ -332,6 +333,32 @@
 
 
 <!-- ══════════════════════════════════════════════════════
+     PAGE: LISTINGS
+══════════════════════════════════════════════════════ -->
+<div id="page-listings" class="page">
+  <div class="hero">
+    <div class="hero-inner">
+      <h2 data-i18n="listingsTitle">Property Listings</h2>
+      <p class="hero-sub" data-i18n="listingsSubtitle">Browse from your Google Sheet, load into the calculator, save a scenario and copy the link back.</p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-section" data-i18n="listingsConfig">Sheet Configuration</div>
+      <div class="listings-url-row">
+        <input type="url" id="listings-url-input" class="listings-url-input" data-i18n-ph="listingsUrlPlaceholder" placeholder="Paste Google Sheets URL…">
+        <button class="btn btn-primary btn-sm" id="btn-listings-save" data-i18n="listingsSaveUrl">Save</button>
+        <button class="btn btn-sm" id="btn-listings-refresh" data-i18n="listingsRefresh">Refresh</button>
+      </div>
+      <p class="listings-url-hint" data-i18n="listingsUrlHint">Publish your sheet first: File → Share → Publish to web → CSV. Then paste the URL above.</p>
+    </div>
+    <div id="listings-status" class="hidden"></div>
+    <div id="listings-table-wrap"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════
      PAGE: ASSUMPTIONS
 ══════════════════════════════════════════════════════ -->
 <div id="page-assumptions" class="page">
@@ -460,6 +487,7 @@
 <script src="js/translations.js"></script>
 <script src="js/calculator.js"></script>
 <script src="js/storage.js"></script>
+<script src="js/listings.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/app.js"></script>
 </body>
