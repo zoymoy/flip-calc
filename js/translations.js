@@ -155,7 +155,7 @@ window.TRANSLATIONS = {
     compareBtn: "Compare Selected",
     compareSelectTwo: "Select at least 2 scenarios to compare.",
     arvWarning: "⚠ At current inputs, this deal loses money. Check your ARV vs. total costs.",
-    shareScenario: "Share Link",
+    shareScenario: "Copy Link",
     linkCopied: "Link copied to clipboard!",
     printBtn: "Print / PDF",
 

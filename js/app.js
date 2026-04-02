@@ -245,10 +245,13 @@
     const ap = results.active;
     const pp = results.passive;
 
-    // Best scenario by annualROI across all three
-    const best = [ap, pp, eq].reduce((a, b) => b.annualROI > a.annualROI ? b : a);
-    const bestLabel = best === ap ? tr.scenarioActive
-                    : best === pp ? tr.scenarioPassive
+    const sel = document.getElementById('stock-col-select');
+    const selectedVal = sel ? sel.value : 'equity';
+    const best = selectedVal === 'active' ? ap
+               : selectedVal === 'passive' ? pp
+               : eq;
+    const bestLabel = selectedVal === 'active' ? tr.scenarioActive
+                    : selectedVal === 'passive' ? tr.scenarioPassive
                     : tr.scenario100;
 
     const capital    = best.capitalRequired;
@@ -541,6 +544,7 @@
     document.getElementById('btn-new')?.addEventListener('click', newScenario);
 document.getElementById('btn-print')?.addEventListener('click', () => window.print());
     document.getElementById('btn-reset-assumptions')?.addEventListener('click', resetAssumptions);
+    document.getElementById('stock-col-select')?.addEventListener('change', recalc);
     document.getElementById('btn-listings-save')?.addEventListener('click', saveListingsUrl);
     document.getElementById('btn-listings-refresh')?.addEventListener('click', renderListingsPage);
   }

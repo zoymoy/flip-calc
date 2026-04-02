@@ -478,6 +478,10 @@ body.rtl .cost-table td:last-child { text-align: left; }
 .empty-state { text-align: center; padding: 2rem; color: var(--text-4); font-size: 13px; }
 
 /* ── VS Stock Market card ── */
+.stock-col-select {
+  width: 100%;
+  margin-bottom: 8px;
+}
 .stock-basis {
   font-size: 11px;
   color: var(--text-3);
