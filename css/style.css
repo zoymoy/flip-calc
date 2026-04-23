@@ -475,6 +475,70 @@ body.rtl .cost-table td:last-child { text-align: left; }
 .chart-wrap { height: 220px; position: relative; }
 .chart-wrap-tall { height: 300px; position: relative; }
 
+/* ── Sensitivity Analysis ── */
+.sensitivity-card { margin-top: 1rem; }
+.sensitivity-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.sensitivity-card-header .chart-title { margin-bottom: 0; }
+.sensitivity-scenario-select {
+  font-size: 12px;
+  padding: 3px 8px;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-ui);
+}
+.sensitivity-subtitle { font-size: 11px; color: var(--text-4); margin-bottom: 12px; line-height: 1.4; }
+.sensitivity-wrap { overflow-x: auto; }
+.sensitivity-grid { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sensitivity-corner {
+  padding: 6px 10px;
+  text-align: left;
+  min-width: 80px;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border-md);
+  font-size: 10px;
+  color: var(--text-4);
+  font-weight: 500;
+  vertical-align: middle;
+}
+.sensitivity-reno-axis { display: block; text-align: left; }
+.sensitivity-arv-axis  { display: block; text-align: right; }
+.sensitivity-col-head {
+  padding: 6px 12px;
+  text-align: center;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border-md);
+  min-width: 110px;
+}
+.sensitivity-col-head.sensitivity-base-col { background: var(--surface-3); }
+.sensitivity-row-head {
+  padding: 6px 10px;
+  text-align: left;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border-md);
+  white-space: nowrap;
+}
+.sensitivity-row-head.sensitivity-base-row { background: var(--surface-3); }
+.sensitivity-axis-pct { font-size: 11px; font-weight: 600; color: var(--text-2); font-family: var(--font-mono); }
+.sensitivity-axis-abs { font-size: 10px; color: var(--text-4); font-family: var(--font-mono); margin-top: 1px; }
+.sensitivity-cell {
+  padding: 8px 12px;
+  text-align: center;
+  border: 0.5px solid var(--border);
+  transition: filter 0.1s;
+}
+.sensitivity-cell:hover { filter: brightness(0.95); }
+.sensitivity-cell.sensitivity-base-cell { outline: 2px solid var(--ink-3); outline-offset: -2px; }
+.sensitivity-cell.sensitivity-loss  { background: #FDECEA; color: #8B1A1A; }
+.sensitivity-cell.sensitivity-warn  { background: #FFF8E1; color: #795500; }
+.sensitivity-cell.sensitivity-ok    { background: #F0FAF5; color: #1A7040; }
+.sensitivity-cell.sensitivity-good  { background: #D8F3E7; color: #0F5C35; }
+.sensitivity-profit { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+.sensitivity-meta   { font-size: 10px; opacity: 0.65; margin-top: 2px; font-family: var(--font-mono); }
+@media (max-width: 720px) { .sensitivity-col-head { min-width: 90px; } }
+
 /* ── Saved scenarios list ── */
 .saved-list { display: flex; flex-direction: column; gap: 6px; }
 .saved-item {

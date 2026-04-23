@@ -325,6 +325,7 @@
     renderSummaries(results);
     renderStockComparison(results);
     renderCharts(results);
+    renderSensitivityTable(results);
     updateSplitBar();
     updateEraBadge(results.eraInfo);
     // ARV loss warning
@@ -568,6 +569,90 @@
     window.Charts.renderCapitalProfit('chart-capital', results, tr);
   }
 
+  // ── Sensitivity Analysis ───────────────────────────────────────────────────
+  function renderSensitivityTable(results) {
+    const el = document.getElementById('sensitivity-table-wrap');
+    if (!el) return;
+
+    const tr = t();
+    const baseParams = results.params;
+
+    const arvMults  = [-0.10, 0, 0.10];
+    const renoMults = [-0.15, 0, 0.15];
+
+    const sel = document.getElementById('sensitivity-scenario-select');
+    const selectedScenario = sel ? sel.value : 'equity';
+
+    const baseRenoAmt = window.Calculator.calcReno(baseParams).base;
+
+    const getResult = (arvMult, renoMult) => {
+      const p = {
+        ...baseParams,
+        arv: Math.round(baseParams.arv * (1 + arvMult)),
+        renoQuality: 'custom',
+        renoCustomAmt: Math.round(baseRenoAmt * (1 + renoMult)),
+      };
+      const r = window.Calculator.calcAll(p);
+      return selectedScenario === 'active'  ? r.active
+           : selectedScenario === 'passive' ? r.passive
+           : r.equity;
+    };
+
+    const arvLabels  = arvMults.map(v  => v  === 0 ? tr.sensitivityBase : (v  > 0 ? '+' : '') + (v  * 100).toFixed(0) + '%');
+    const renoLabels = renoMults.map(v => v === 0 ? tr.sensitivityBase : (v > 0 ? '+' : '') + (v * 100).toFixed(0) + '%');
+
+    let html = `<div class="sensitivity-wrap"><table class="sensitivity-grid"><thead><tr>
+      <th class="sensitivity-corner">
+        <span class="sensitivity-reno-axis">${tr.sensitivityRenoLabel}</span>
+        <span class="sensitivity-arv-axis">${tr.sensitivityArvLabel}</span>
+      </th>`;
+
+    arvMults.forEach((av, ai) => {
+      const arvVal = Math.round(baseParams.arv * (1 + av));
+      html += `<th class="sensitivity-col-head${av === 0 ? ' sensitivity-base-col' : ''}">
+        <div class="sensitivity-axis-pct">${arvLabels[ai]}</div>
+        <div class="sensitivity-axis-abs">${fmt(arvVal)}</div>
+      </th>`;
+    });
+
+    html += `</tr></thead><tbody>`;
+
+    renoMults.forEach((rv, ri) => {
+      const renoVal = Math.round(baseRenoAmt * (1 + rv));
+      html += `<tr>
+        <th class="sensitivity-row-head${rv === 0 ? ' sensitivity-base-row' : ''}">
+          <div class="sensitivity-axis-pct">${renoLabels[ri]}</div>
+          <div class="sensitivity-axis-abs">${fmt(renoVal)}</div>
+        </th>`;
+
+      arvMults.forEach((av, ai) => {
+        const r = getResult(av, rv);
+        const profit = r.netProfit;
+        const arvForCell = Math.round(baseParams.arv * (1 + av));
+        const profitPct = arvForCell > 0 ? profit / arvForCell * 100 : 0;
+        const isBase = av === 0 && rv === 0;
+
+        let cls = 'sensitivity-cell';
+        if (isBase) cls += ' sensitivity-base-cell';
+        if      (profit < 0)     cls += ' sensitivity-loss';
+        else if (profitPct < 8)  cls += ' sensitivity-warn';
+        else if (profitPct >= 15) cls += ' sensitivity-good';
+        else                     cls += ' sensitivity-ok';
+
+        html += `<td class="${cls}">
+          <div class="sensitivity-profit">${fmt(profit)}</div>
+          <div class="sensitivity-meta">${pctPlain(r.roi)} · ${pctPlain(r.annualROI)} ${tr.sensitivityAnnROI}</div>
+        </td>`;
+      });
+
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+
+    el.innerHTML = html;
+  }
+
   // ── Scenario Save/Load ────────────────────────────────────────────────────
   function bindScenarioActions() {
     document.getElementById('btn-save')?.addEventListener('click', saveScenario);
@@ -575,6 +660,7 @@
 document.getElementById('btn-print')?.addEventListener('click', () => window.print());
     document.getElementById('btn-reset-assumptions')?.addEventListener('click', resetAssumptions);
     document.getElementById('stock-col-select')?.addEventListener('change', recalc);
+    document.getElementById('sensitivity-scenario-select')?.addEventListener('change', recalc);
     document.getElementById('btn-listings-save')?.addEventListener('click', saveListingsUrl);
     document.getElementById('btn-listings-refresh')?.addEventListener('click', renderListingsPage);
   }

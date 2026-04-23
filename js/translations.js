@@ -319,6 +319,14 @@ window.TRANSLATIONS = {
     listingsColLink:          "Link",
     listingsColFlipCalc:      "FlipCalc",
 
+    // Sensitivity analysis
+    sensitivityTitle:    "Sensitivity Analysis",
+    sensitivitySubtitle: "Net profit (€) by ARV and renovation cost variance. Center cell = current inputs.",
+    sensitivityBase:     "Base",
+    sensitivityArvLabel: "ARV →",
+    sensitivityRenoLabel:"Reno ↓",
+    sensitivityAnnROI:   "ann.",
+
   },
 
   ro: {
@@ -626,6 +634,14 @@ window.TRANSLATIONS = {
     listingsColLink:          "Link",
     listingsColFlipCalc:      "FlipCalc",
 
+    // Sensitivity analysis
+    sensitivityTitle:    "Analiză de sensibilitate",
+    sensitivitySubtitle: "Profit net (€) în funcție de variațiile ARV și costurilor de renovare. Celula centrală = valorile curente.",
+    sensitivityBase:     "Bază",
+    sensitivityArvLabel: "ARV →",
+    sensitivityRenoLabel:"Reno ↓",
+    sensitivityAnnROI:   "anual",
+
   },
 
   he: {
@@ -932,6 +948,14 @@ window.TRANSLATIONS = {
     listingsColNotes:         "הערות",
     listingsColLink:          "קישור",
     listingsColFlipCalc:      "FlipCalc",
+
+    // Sensitivity analysis
+    sensitivityTitle:    "ניתוח רגישות",
+    sensitivitySubtitle: "רווח נקי (€) לפי שונות ARV ועלויות שיפוץ. תא מרכזי = ערכים נוכחיים.",
+    sensitivityBase:     "בסיס",
+    sensitivityArvLabel: "ARV ←",
+    sensitivityRenoLabel:"שיפוץ ↑",
+    sensitivityAnnROI:   "שנתי",
 
   }
 };
