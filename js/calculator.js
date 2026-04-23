@@ -107,7 +107,7 @@ window.Calculator = {
     const base = this.calcEquity(params);
     const passiveShare = (params.yourSharePct || A.jvCapitalSplitPassivePct) / 100;
     const activeShare  = 1 - passiveShare;
-    const isFastFlip   = params.projectMonths < A.jvFastFlipThresholdMonths;
+    const isFastFlip   = params.projectMonths <= A.jvFastFlipThresholdMonths;
     const activeProfitPct  = (isFastFlip ? A.jvProfitSplitFastFlipActivePct : A.jvProfitSplitStandardActivePct) / 100;
 
     // Party B funds 100% of reno + activeShare of all other costs
@@ -143,7 +143,7 @@ window.Calculator = {
     const base = this.calcEquity(params);
     const passiveShare = (params.yourSharePct || A.jvCapitalSplitPassivePct) / 100;
     const activeShare  = 1 - passiveShare;
-    const isFastFlip   = params.projectMonths < A.jvFastFlipThresholdMonths;
+    const isFastFlip   = params.projectMonths <= A.jvFastFlipThresholdMonths;
     const activeProfitPct  = (isFastFlip ? A.jvProfitSplitFastFlipActivePct : A.jvProfitSplitStandardActivePct) / 100;
     const passiveProfitPct = 1 - activeProfitPct;
 
