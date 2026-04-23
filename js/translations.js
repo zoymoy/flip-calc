@@ -55,8 +55,9 @@ window.TRANSLATIONS = {
     era1990:     "1990–2000 (Post-communist)",
     era2000:     "2000+ (Modern)",
 
-    yourSharePct: "Your Share (%)",
-    mgmtFeePct: "Management Fee (% of profit)",
+    yourSharePct: "Party A Capital Share (%)",
+    fastFlip:     "Fast Flip",
+    standardDeal: "Standard Deal",
 
     // Cost items
     purchasePriceLabel: "Purchase price",
@@ -70,6 +71,7 @@ window.TRANSLATIONS = {
     utilityHolding: "  Utilities",
     propTaxHolding: "  Property tax",
     maintHolding: "  Building maintenance",
+    insuranceHolding: "  Property insurance",
     totalInvestment: "Total investment",
     sellerAgent: "Seller agent (2.5%)",
     sellerNotary: "Seller notary",
@@ -110,7 +112,7 @@ window.TRANSLATIONS = {
     tipArv:             "After Repair Value — the resale price you expect after renovation. The most uncertain input; treat it conservatively.",
     tipProjectMonths:   "Total duration from purchase to receiving sale proceeds. Affects holding costs and annualises your ROI.",
     tipTaxStructure:    "3% CGT (Fiscal Code Art. 111). Flips are short-term sales by definition.",
-    tipYourSharePct:    "Your equity contribution as % of total project cost. The partner funds the rest and earns the same share of profit.",
+    tipYourSharePct:    "Party A (Yoav) capital share of acquisition & holding costs. Party B (Costi) funds the rest of those costs plus 100% of renovation. Profit split is set by the JV term sheet (65/35 standard, 60/40 fast flip).",
     tipMgmtFeePct:      "Fee for the active partner running the project, deducted from gross profit before the equity split. Set to 0 for a pure split.",
 
     // Tooltips — cost table rows & metrics
@@ -252,32 +254,32 @@ window.TRANSLATIONS = {
     summaryEquityVerdict: (r) => `Best ROI on paper — but demands the most cash up front.`,
 
     // Active Partner summary
-    summaryActiveExplain: (r, share) => `Manages the deal and contributes ${share}% of the capital${r.mgmtFee > 0 ? ', earning a management fee on top of the equity split' : ''}.`,
+    summaryActiveExplain: (r, share) => `Costi manages the deal. Funds ${share}% of acquisition & holding costs plus 100% of renovation. Earns ${Math.round(r.activeProfitPct * 100)}% of net profit (${r.isFastFlip ? 'Fast Flip' : 'Standard Deal'}).`,
     summaryActivePros: (r) => [
-      "Management fee rewards effort and expertise",
-      "Higher ROI % than going solo thanks to leverage",
-      r.mgmtFee > 0 ? `Fee of ${r.fmt(r.mgmtFee)} is earned regardless of profit split` : "Direct equity share with no fee overhead",
+      "Higher profit % than capital % — rewarded for operator role",
+      "Lower cash-in on acquisition; renovation funded separately",
+      `Earns ${Math.round(r.activeProfitPct * 100)}% of net profit with full operational control`,
     ],
     summaryActiveCons: [
+      "Carries 100% of renovation cost and execution risk",
       "Requires operational time and project management",
-      "Needs a solid written partnership agreement",
       "Partner misalignment can delay or derail the project",
     ],
-    summaryActiveVerdict: (r) => `Highest return for the operator — less capital in, management fee on top.`,
+    summaryActiveVerdict: (r) => `Operator's deal — less acquisition capital, full reno responsibility, higher % of profit.`,
 
     // Passive Partner summary
-    summaryPassiveExplain: (r, share) => `Contributes ${share}% of the capital and earns a proportional share of profit after the management fee.`,
+    summaryPassiveExplain: (r, share) => `Yoav provides capital. Funds ${share}% of acquisition & holding costs, zero renovation cost. Earns ${Math.round((1 - r.activeProfitPct) * 100)}% of net profit (${r.isFastFlip ? 'Fast Flip' : 'Standard Deal'}).`,
     summaryPassivePros: (r) => [
-      `Lower capital required (${r.fmt(r.capitalRequired)}) — freed funds available for other investments`,
+      `Capital of ${r.fmt(r.capitalRequired)} — no renovation exposure`,
       "Passive income — no operational involvement needed",
-      "ROI is predictable and tied directly to deal performance",
+      "ROI tied directly to deal performance with no reno risk",
     ],
     summaryPassiveCons: [
-      "Management fee reduces your share of the profit pool",
-      "Depends on the active partner to execute well",
+      "Lower profit % than capital share (65% profit on 75% capital)",
+      "Depends on the active partner to execute renovation well",
       "Requires a solid written partnership agreement",
     ],
-    summaryPassiveVerdict: (r) => `Pure capital play — deploy less, earn proportionally, stay hands-off.`,
+    summaryPassiveVerdict: (r) => `Capital investor — funds acquisition, no reno cost, earns majority of net profit.`,
 
     vsStockMarket:   "VS Stock Market",
     stockFlipCol:    "Flip",
@@ -372,8 +374,9 @@ window.TRANSLATIONS = {
     era1990:     "1990–2000 (Post-comunism)",
     era2000:     "2000+ (Modern)",
 
-    yourSharePct: "Cota ta (%)",
-    mgmtFeePct: "Comision management (% din profit)",
+    yourSharePct: "Cotă capital Partea A (%)",
+    fastFlip:     "Flip Rapid",
+    standardDeal: "Tranzacție Standard",
 
     purchasePriceLabel: "Preț achiziție",
     notaryFee: "Onorariu notarial",
@@ -386,6 +389,7 @@ window.TRANSLATIONS = {
     utilityHolding: "  Utilități",
     propTaxHolding: "  Impozit proprietate",
     maintHolding: "  Fond de întreținere",
+    insuranceHolding: "  Asigurare proprietate",
     totalInvestment: "Total investiție",
     sellerAgent: "Agent vânzător (2,5%)",
     sellerNotary: "Notar vânzător",
@@ -425,7 +429,7 @@ window.TRANSLATIONS = {
     tipArv:             "Valoarea după renovare — prețul de vânzare estimat după finalizarea lucrărilor. Cel mai incert parametru; fiți conservatori.",
     tipProjectMonths:   "Durata totală de la achiziție până la primirea banilor din vânzare. Afectează costurile de deținere și ROI-ul anual.",
     tipTaxStructure:    "3% impozit pe câștig de capital (Codul Fiscal Art. 111). Flip-urile sunt vânzări pe termen scurt prin definiție.",
-    tipYourSharePct:    "Contribuția ta de capital ca % din costul total al proiectului. Partenerul finanțează restul și câștigă aceeași pondere din profit.",
+    tipYourSharePct:    "Cota de capital a Părții A (Yoav) din costurile de achiziție și deținere. Partea B (Costi) finanțează restul acestor costuri plus 100% din renovare. Împărțirea profitului este fixată prin acordul JV (65/35 standard, 60/40 flip rapid).",
     tipMgmtFeePct:      "Comisionul partenerului activ pentru gestionarea proiectului, dedus din profitul brut înainte de împărțire. Setați 0 pentru o împărțire simplă.",
 
     // Tooltips — rânduri tabel costuri și metrici
@@ -558,28 +562,28 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: () => `Cel mai mare profit absolut — dar necesită cel mai mult capital în avans.`,
 
-    summaryActiveExplain: (r, share) => `Gestionează tranzacția și contribuie cu ${share}% din capital${r.mgmtFee > 0 ? ", câștigând un comision de management pe lângă cota din profit" : ""}.`,
+    summaryActiveExplain: (r, share) => `Costi gestionează tranzacția. Finanțează ${share}% din costuri de achiziție și deținere plus 100% din renovare. Câștigă ${Math.round(r.activeProfitPct * 100)}% din profitul net (${r.isFastFlip ? 'Flip Rapid' : 'Tranzacție Standard'}).`,
     summaryActivePros: (r) => [
-      "Comisionul de management recompensează efortul și expertiza",
-      "ROI % mai mare decât investiția solo datorită efectului de levier",
-      r.mgmtFee > 0 ? `Comision de ${r.fmt(r.mgmtFee)} indiferent de împărțirea profitului` : "Cotă directă din capital fără costuri suplimentare",
+      "Profit % mai mare decât cota de capital — recompensat pentru rol operator",
+      "Capital mai mic la achiziție; renovarea finanțată separat",
+      `Câștigă ${Math.round(r.activeProfitPct * 100)}% din profitul net cu control operațional complet`,
     ],
     summaryActiveCons: [
+      "Suportă 100% din costul și riscul renovării",
       "Necesită timp operațional și management de proiect",
-      "Necesită un acord de parteneriat scris solid",
       "Dezacordurile cu partenerul pot întârzia sau bloca proiectul",
     ],
-    summaryActiveVerdict: (r) => `Cel mai bun randament pentru operator — capital mai mic, comision pe deasupra.`,
+    summaryActiveVerdict: (r) => `Tranzacția operatorului — capital mai mic la achiziție, responsabilitate totală renovare, profit % mai mare.`,
 
-    summaryPassiveExplain: (r, share) => `Contribuie cu ${share}% din capital și câștigă o cotă proporțională din profit după comisionul de management.`,
+    summaryPassiveExplain: (r, share) => `Yoav furnizează capitalul. Finanțează ${share}% din costuri de achiziție și deținere, fără costuri de renovare. Câștigă ${Math.round((1 - r.activeProfitPct) * 100)}% din profitul net (${r.isFastFlip ? 'Flip Rapid' : 'Tranzacție Standard'}).`,
     summaryPassivePros: (r) => [
-      `Capital necesar mai mic (${r.fmt(r.capitalRequired)}) — fonduri eliberate disponibile pentru alte investiții`,
+      `Capital de ${r.fmt(r.capitalRequired)} — fără expunere la renovare`,
       "Venit pasiv — fără implicare operațională",
-      "ROI predictibil, direct legat de performanța tranzacției",
+      "ROI legat direct de performanța tranzacției, fără risc de renovare",
     ],
     summaryPassiveCons: [
-      "Comisionul de management reduce cota ta din profitul total",
-      "Depinde de execuția corectă a partenerului activ",
+      "Profit % mai mic decât cota de capital (65% profit pe 75% capital)",
+      "Depinde de execuția corectă a renovării de către partenerul activ",
       "Necesită un acord de parteneriat scris solid",
     ],
     summaryPassiveVerdict: (r) => `Investiție pură de capital — implici mai puțin, câștigi proporțional, rămâi pasiv.`,
@@ -677,8 +681,9 @@ window.TRANSLATIONS = {
     era1990:     "1990–2000 (פוסט-קומוניזם)",
     era2000:     "2000+ (מודרני)",
 
-    yourSharePct: "חלקך (%)",
-    mgmtFeePct: "דמי ניהול (% מהרווח)",
+    yourSharePct: "נתח הון צד א' (%)",
+    fastFlip:     "פליפ מהיר",
+    standardDeal: "עסקה רגילה",
 
     purchasePriceLabel: "מחיר רכישה",
     notaryFee: "שכר נוטריון",
@@ -690,6 +695,7 @@ window.TRANSLATIONS = {
     holdingCosts: "עלויות החזקה",
     utilityHolding: "  חשמל/מים/גז",
     propTaxHolding: "  ארנונה",
+    insuranceHolding: "  ביטוח נכס",
     maintHolding: "  ועד בית",
     totalInvestment: "סה\"כ השקעה",
     sellerAgent: "עמלת סוכן מוכר (2.5%)",
@@ -730,7 +736,7 @@ window.TRANSLATIONS = {
     tipArv:             "ערך לאחר שיפוץ — מחיר המכירה הצפוי לאחר סיום העבודות. הפרמטר הכי לא ודאי; יש להיות שמרנים.",
     tipProjectMonths:   "משך כולל מרכישה ועד קבלת כספי המכירה. משפיע על עלויות ההחזקה ועל ROI השנתי.",
     tipTaxStructure:    "3% מס רווח הון (סעיף 111 לחוק המס). פליפ הוא מכירה קצרת-טווח בהגדרה.",
-    tipYourSharePct:    "תרומת ההון שלך כ-% מסך עלות הפרויקט. השותף מממן את השאר ומרוויח אותו חלק מהרווח.",
+    tipYourSharePct:    "נתח ההון של צד א' (יואב) מעלויות הרכישה וההחזקה. צד ב' (קוסטי) מממן את השאר ועלויות אלה בתוספת 100% מהשיפוץ. חלוקת הרווח נקבעת על פי הסכם JV (65/35 רגיל, 60/40 פליפ מהיר).",
     tipMgmtFeePct:      "שכר עבור השותף הפעיל שמנהל את הפרויקט, מנוכה מהרווח הגולמי לפני החלוקה. הגדר 0 לחלוקה פשוטה.",
 
     // טולטיפים — שורות טבלת עלויות ומדדים
@@ -863,28 +869,28 @@ window.TRANSLATIONS = {
     ],
     summaryEquityVerdict: () => `הרווח הגבוה ביותר בפועל — אך דורש את ההון הגדול ביותר מראש.`,
 
-    summaryActiveExplain: (r, share) => `מנהל את העסקה ותורם ${share}% מההון${r.mgmtFee > 0 ? ", ומרוויח דמי ניהול על גבי חלקו מהרווח" : ""}.`,
+    summaryActiveExplain: (r, share) => `קוסטי מנהל את העסקה. מממן ${share}% מעלויות הרכישה וההחזקה בתוספת 100% מהשיפוץ. מרוויח ${Math.round(r.activeProfitPct * 100)}% מהרווח הנקי (${r.isFastFlip ? 'פליפ מהיר' : 'עסקה רגילה'}).`,
     summaryActivePros: (r) => [
-      "דמי הניהול מתגמלים על המאמץ והמומחיות",
-      "ROI % גבוה יותר מהשקעה עצמאית בזכות המינוף",
-      r.mgmtFee > 0 ? `עמלה של ${r.fmt(r.mgmtFee)} ללא קשר לחלוקת הרווח` : "חלק ישיר בהון ללא עמלות נוספות",
+      "רווח % גבוה יותר מנתח ההון — מתוגמל על תפקיד המנהל",
+      "הון קטן יותר ברכישה; השיפוץ ממומן בנפרד",
+      `מרוויח ${Math.round(r.activeProfitPct * 100)}% מהרווח הנקי עם שליטה תפעולית מלאה`,
     ],
     summaryActiveCons: [
+      "נושא ב-100% מעלות ורוחב הסיכון של השיפוץ",
       "דורש זמן תפעולי וניהול פרויקט",
-      "נדרש הסכם שותפות כתוב ומחייב",
       "חוסר התאמה עם השותף עלול לעכב או לפגוע בפרויקט",
     ],
-    summaryActiveVerdict: (r) => `התשואה הגבוהה ביותר למנהל — פחות הון, דמי ניהול בנוסף.`,
+    summaryActiveVerdict: (r) => `עסקת המנהל — פחות הון ברכישה, אחריות מלאה בשיפוץ, אחוז רווח גבוה יותר.`,
 
-    summaryPassiveExplain: (r, share) => `תורם ${share}% מההון ומרוויח חלק יחסי מהרווח לאחר דמי הניהול.`,
+    summaryPassiveExplain: (r, share) => `יואב מספק הון. מממן ${share}% מעלויות הרכישה וההחזקה, ללא עלויות שיפוץ. מרוויח ${Math.round((1 - r.activeProfitPct) * 100)}% מהרווח הנקי (${r.isFastFlip ? 'פליפ מהיר' : 'עסקה רגילה'}).`,
     summaryPassivePros: (r) => [
-      `הון נדרש נמוך יותר (${r.fmt(r.capitalRequired)}) — כספים פנויים לאחר השקעות`,
+      `הון של ${r.fmt(r.capitalRequired)} — ללא חשיפה לשיפוץ`,
       "הכנסה פסיבית — ללא מעורבות תפעולית",
-      "ROI צפוי ותלוי ישירות בביצועי העסקה",
+      "ROI תלוי ישירות בביצועי העסקה ללא סיכון שיפוץ",
     ],
     summaryPassiveCons: [
-      "דמי הניהול מקטינים את חלקך מסך הרווח",
-      "תלוי בביצוע טוב של השותף הפעיל",
+      "רווח % נמוך מנתח ההון (65% רווח על 75% הון)",
+      "תלוי בביצוע טוב של השיפוץ על ידי השותף הפעיל",
       "נדרש הסכם שותפות כתוב ומחייב",
     ],
     summaryPassiveVerdict: (r) => `השקעת הון טהורה — פחות כסף, רווח יחסי, ללא מעורבות.`,

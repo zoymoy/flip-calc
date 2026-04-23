@@ -39,10 +39,11 @@ window.Calculator = {
    */
   calcHoldingCosts(months) {
     const A = window.ASSUMPTIONS;
-    const utility = A.utilityMonthly * months;
-    const propTax = A.propertyTaxMonthly * months;
-    const maint = A.buildingMaintMonthly * months;
-    return { utility, propTax, maint, total: utility + propTax + maint };
+    const utility   = A.utilityMonthly * months;
+    const propTax   = A.propertyTaxMonthly * months;
+    const maint     = A.buildingMaintMonthly * months;
+    const insurance = A.propertyInsuranceMonthly * months;
+    return { utility, propTax, maint, insurance, total: utility + propTax + maint + insurance };
   },
 
   /**
@@ -98,22 +99,24 @@ window.Calculator = {
   },
 
   /**
-   * Full calculation for the Active Partner (manages deal, earns management fee + equity share)
+   * Active Partner (Party B — Costi): funds 25% of non-reno costs + 100% of renovation.
+   * Profit split per term sheet: 35% standard, 40% fast flip (< 4 months).
    */
   calcActivePartner(params) {
+    const A = window.ASSUMPTIONS;
     const base = this.calcEquity(params);
-    const passiveShare = (params.yourSharePct || 50) / 100;
+    const passiveShare = (params.yourSharePct || A.jvCapitalSplitPassivePct) / 100;
     const activeShare  = 1 - passiveShare;
-    const mgmtRate     = (params.mgmtFeePct || 0) / 100;
+    const isFastFlip   = params.projectMonths < A.jvFastFlipThresholdMonths;
+    const activeProfitPct  = (isFastFlip ? A.jvProfitSplitFastFlipActivePct : A.jvProfitSplitStandardActivePct) / 100;
 
-    const activeCapital    = base.totalInvestment * activeShare;
-    const passiveCapital   = base.totalInvestment * passiveShare;
-    const mgmtFee          = Math.round(base.grossProfit * mgmtRate);
-    const profitAfterMgmt  = base.grossProfit - mgmtFee;
-    const activeProfitShare  = Math.round(profitAfterMgmt * activeShare);
-    const activeGrossProfit  = mgmtFee + activeProfitShare;
-    const activeCGT          = Math.round(this.calcCGT(params.arv) / 2);
-    const activeNetProfit    = activeGrossProfit - activeCGT;
+    // Party B funds 100% of reno + activeShare of all other costs
+    const nonRenoCosts  = base.totalInvestment - base.reno;
+    const activeCapital = nonRenoCosts * activeShare + base.reno;
+    const passiveCapital = nonRenoCosts * passiveShare;
+
+    // Net profit (after CGT) split by profit percentage
+    const activeNetProfit = Math.round(base.netProfit * activeProfitPct);
 
     const roi      = activeCapital > 0 ? (activeNetProfit / activeCapital) * 100 : 0;
     const annualROI = params.projectMonths > 0 ? roi * (12 / params.projectMonths) : 0;
@@ -121,9 +124,9 @@ window.Calculator = {
     return {
       mode: 'active',
       ...base,
-      activeShare, activeCapital, passiveCapital,
-      mgmtFee, profitAfterMgmt, activeProfitShare,
-      activeGrossProfit, activeCGT, activeNetProfit,
+      activeShare, passiveShare, activeCapital, passiveCapital,
+      activeProfitPct, isFastFlip,
+      activeNetProfit,
       capitalRequired: activeCapital,
       netProfit: activeNetProfit,
       roi, annualROI,
@@ -132,21 +135,25 @@ window.Calculator = {
   },
 
   /**
-   * Full calculation for the Passive Partner (capital only, no management fee)
+   * Passive Partner (Party A — Yoav): funds 75% of non-reno costs, 0% of renovation.
+   * Profit split per term sheet: 65% standard, 60% fast flip (< 4 months).
    */
   calcPassivePartner(params) {
+    const A = window.ASSUMPTIONS;
     const base = this.calcEquity(params);
-    const passiveShare = (params.yourSharePct || 50) / 100;
+    const passiveShare = (params.yourSharePct || A.jvCapitalSplitPassivePct) / 100;
     const activeShare  = 1 - passiveShare;
-    const mgmtRate     = (params.mgmtFeePct || 0) / 100;
+    const isFastFlip   = params.projectMonths < A.jvFastFlipThresholdMonths;
+    const activeProfitPct  = (isFastFlip ? A.jvProfitSplitFastFlipActivePct : A.jvProfitSplitStandardActivePct) / 100;
+    const passiveProfitPct = 1 - activeProfitPct;
 
-    const passiveCapital   = base.totalInvestment * passiveShare;
-    const activeCapital    = base.totalInvestment * activeShare;
-    const mgmtFee          = Math.round(base.grossProfit * mgmtRate);
-    const profitAfterMgmt  = base.grossProfit - mgmtFee;
-    const passiveProfitShare = Math.round(profitAfterMgmt * passiveShare);
-    const passiveCGT         = Math.round(this.calcCGT(params.arv) / 2);
-    const passiveNetProfit   = passiveProfitShare - passiveCGT;
+    // Party A funds passiveShare of non-reno costs, 0% of reno
+    const nonRenoCosts   = base.totalInvestment - base.reno;
+    const passiveCapital = nonRenoCosts * passiveShare;
+    const activeCapital  = nonRenoCosts * activeShare + base.reno;
+
+    // Net profit (after CGT) split by profit percentage
+    const passiveNetProfit = Math.round(base.netProfit * passiveProfitPct);
 
     const roi      = passiveCapital > 0 ? (passiveNetProfit / passiveCapital) * 100 : 0;
     const annualROI = params.projectMonths > 0 ? roi * (12 / params.projectMonths) : 0;
@@ -154,9 +161,9 @@ window.Calculator = {
     return {
       mode: 'passive',
       ...base,
-      passiveShare, passiveCapital, activeCapital,
-      mgmtFee, profitAfterMgmt, passiveProfitShare,
-      passiveCGT, passiveNetProfit,
+      passiveShare, activeShare, passiveCapital, activeCapital,
+      activeProfitPct, passiveProfitPct, isFastFlip,
+      passiveNetProfit,
       capitalRequired: passiveCapital,
       netProfit: passiveNetProfit,
       roi, annualROI,

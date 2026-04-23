@@ -138,16 +138,12 @@
         <div class="card">
           <div class="card-section" data-i18n="sectionPartnership">Partnership</div>
           <div class="field">
-            <div class="range-row"><span class="range-label" data-i18n="yourSharePct">Your Share (%)<span class="tip-icon" data-i18n-tip="tipYourSharePct" tabindex="0">ⓘ</span></span><span class="range-val" id="inp-share-val">50%</span></div>
-            <input type="range" id="inp-share" min="10" max="90" step="5" value="50">
+            <div class="range-row"><span class="range-label" data-i18n="yourSharePct">Party A Capital Share (%)<span class="tip-icon" data-i18n-tip="tipYourSharePct" tabindex="0">ⓘ</span></span><span class="range-val" id="inp-share-val">75%</span></div>
+            <input type="range" id="inp-share" min="10" max="90" step="5" value="75">
             <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:6px;gap:2px;">
-              <div id="split-bar-you" style="width:50%;background:#534AB7;border-radius:3px;transition:width 0.2s;"></div>
+              <div id="split-bar-you" style="width:75%;background:#534AB7;border-radius:3px;transition:width 0.2s;"></div>
               <div style="flex:1;background:#CECBF6;border-radius:3px;"></div>
             </div>
-          </div>
-          <div class="field">
-            <div class="range-row"><span class="range-label" data-i18n="mgmtFeePct">Mgmt Fee (% of profit)<span class="tip-icon" data-i18n-tip="tipMgmtFeePct" tabindex="0">ⓘ</span></span><span class="range-val" id="inp-mgmt-val">5%</span></div>
-            <input type="range" id="inp-mgmt" min="0" max="20" step="1" value="5">
           </div>
         </div>
 
@@ -232,6 +228,7 @@
             <div class="scenario-col-head purple" id="ap-col-head">
               <div class="col-dot"></div>
               <span class="col-title" data-i18n="scenarioActive">Active Partner</span>
+              <span class="col-partner-name">Costi</span>
             </div>
             <div class="col-metrics">
               <div class="col-metric">
@@ -260,6 +257,7 @@
             <div class="scenario-col-head blue" id="pp-col-head">
               <div class="col-dot"></div>
               <span class="col-title" data-i18n="scenarioPassive">Passive Partner</span>
+              <span class="col-partner-name">Yoav</span>
             </div>
             <div class="col-metrics">
               <div class="col-metric">

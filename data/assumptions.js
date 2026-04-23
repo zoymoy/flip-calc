@@ -49,6 +49,7 @@ window.ASSUMPTIONS = {
   utilityMonthly: 80,          // electricity, water, gas (vacant)
   propertyTaxMonthly: 20,      // approx €20/month (0.1% annual on €240k)
   buildingMaintMonthly: 30,    // condo/building fund (întreținere)
+  propertyInsuranceMonthly: 20, // property insurance (PAD + facultative)
 
   // SALE COSTS
   sellerAgentPct: 2.5,         // 2–3% seller side (APAIR)
@@ -67,8 +68,11 @@ window.ASSUMPTIONS = {
   bankSetupFeePct: 1.0,        // bank arrangement/setup fee
   mortgageInsurancePct: 0.2,   // annual insurance on outstanding loan
 
-  // PARTNERSHIP
-  mgmtFeeDefault: 5,           // 5% of gross profit — standard for active partner
+  // PARTNERSHIP — JV Term Sheet (Bachrach/Costi, April 2026)
+  jvCapitalSplitPassivePct: 75,          // Party A (Yoav) funds 75% of non-reno costs
+  jvProfitSplitStandardActivePct: 35,    // Party B (Costi) gets 35% — Standard Deal (≥ 4 months)
+  jvProfitSplitFastFlipActivePct: 40,    // Party B (Costi) gets 40% — Fast Flip (< 4 months)
+  jvFastFlipThresholdMonths: 4,          // < 4 months proxy for < 120 calendar days
 
   // MARKET DATA (Bucharest 2026 — imobiliare.ro)
   avgPricePerSqmBucharest: 2150,   // €/m² average asking price
@@ -150,6 +154,7 @@ window.ASSUMPTION_DEFAULTS = Object.freeze({
   utilityMonthly:            window.ASSUMPTIONS.utilityMonthly,
   propertyTaxMonthly:        window.ASSUMPTIONS.propertyTaxMonthly,
   buildingMaintMonthly:      window.ASSUMPTIONS.buildingMaintMonthly,
+  propertyInsuranceMonthly:  window.ASSUMPTIONS.propertyInsuranceMonthly,
   sellerAgentPct:            window.ASSUMPTIONS.sellerAgentPct,
   sellerNotaryPct:           window.ASSUMPTIONS.sellerNotaryPct,
   cgtIndividualShortPct:     window.ASSUMPTIONS.cgtIndividualShortPct,
@@ -160,7 +165,6 @@ window.ASSUMPTION_DEFAULTS = Object.freeze({
   ltvMaxResident:            window.ASSUMPTIONS.ltvMaxResident,
   bankSetupFeePct:           window.ASSUMPTIONS.bankSetupFeePct,
   mortgageInsurancePct:      window.ASSUMPTIONS.mortgageInsurancePct,
-  mgmtFeeDefault:            window.ASSUMPTIONS.mgmtFeeDefault,
   avgPricePerSqmBucharest:   window.ASSUMPTIONS.avgPricePerSqmBucharest,
   avgRentalYieldBucharest:   window.ASSUMPTIONS.avgRentalYieldBucharest,
   avgDaysOnMarket:           window.ASSUMPTIONS.avgDaysOnMarket,

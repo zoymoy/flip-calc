@@ -21,8 +21,7 @@
     projectMonths: 9,
     taxStructure: 'individual',
     buildingEra: '1978',
-    yourSharePct: 50,
-    mgmtFeePct: 5,
+    yourSharePct: 75,
   };
 
   let params = {
@@ -36,8 +35,7 @@
     projectMonths: 9,
     taxStructure: 'individual',
     buildingEra: '1978',
-    yourSharePct: 50,
-    mgmtFeePct: 5,
+    yourSharePct: 75,
   };
 
   const t = () => window.TRANSLATIONS[lang];
@@ -205,7 +203,7 @@
         const disp = document.getElementById(id + '-val');
         if (disp) {
           if (key === 'projectMonths') disp.textContent = t().months(params[key]);
-          else if (['yourSharePct','mgmtFeePct'].includes(key)) disp.textContent = params[key] + '%';
+          else if (key === 'yourSharePct') disp.textContent = params[key] + '%';
           else if (key === 'propertySize') disp.textContent = params[key] + ' m²';
           else disp.textContent = fmt(params[key]);
         }
@@ -238,7 +236,6 @@
     // inp-tax is readonly — no bind needed
     bind('inp-era',      'buildingEra',   'select');
     bind('inp-share',    'yourSharePct',  'range');
-    bind('inp-mgmt',     'mgmtFeePct',    'range');
   }
 
   // ── Tooltip interaction (mobile tap + keyboard dismiss) ────────────────────
@@ -389,6 +386,7 @@
       ['td-lbl', tr.utilityHolding,     fmt(r.holding.utility)],
       ['td-lbl', tr.propTaxHolding,     fmt(r.holding.propTax)],
       ['td-lbl', tr.maintHolding,       fmt(r.holding.maint)],
+      ['td-lbl', tr.insuranceHolding,   fmt(r.holding.insurance)],
       ['divider', tr.totalInvestment,   fmt(r.totalInvestment)],
       ['td-lbl', tr.saleProceeds,       fmt(r.arv)],
       ['td-lbl', tr.sellerAgent,        fmt(r.saleCosts.sellerAgent),    tr.tipSellerAgent],
@@ -405,26 +403,25 @@
 
   function renderActivePartner(r, eraInfo) {
     const tr = t();
-    const activePct  = Math.round(r.activeShare * 100);
-    const passivePct = Math.round((1 - r.activeShare) * 100);
+    const capitalSharePct = Math.round(r.activeShare * 100);
+    const profitSharePct  = Math.round(r.activeProfitPct * 100);
+    const dealTypeLabel   = r.isFastFlip ? tr.fastFlip : tr.standardDeal;
     document.getElementById('ap-metric-capital').textContent = fmt(r.capitalRequired);
     document.getElementById('ap-metric-profit').textContent  = fmt(r.activeNetProfit);
     document.getElementById('ap-metric-roi').textContent     = pctPlain(r.roi);
     document.getElementById('ap-metric-annroi').textContent  = pctPlain(r.annualROI);
 
     const rows = [
-      ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
-      ['td-lbl', tr.activeCapitalLabel + ' (' + activePct + '%)',  fmt(r.activeCapital)],
-      ['divider', tr.sectionResults,    ''],
-      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit),              tr.tipGrossProfit],
-      ['divider', tr.scenarioActive,    ''],
-      ['td-lbl', tr.mgmtFeeLabel,       fmt(r.mgmtFee),                  tr.tipMgmtFeeLabel],
-      ['td-lbl', tr.activeProfitShare,  fmt(r.activeProfitShare)],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.activeCGT),          tr.tipCapitalGainsTax],
-      ['profit-purple', tr.netProfitLabel, fmt(r.activeNetProfit),        tr.tipNetProfit],
-      ['roi-purple', tr.roiOnCapital,   pctPlain(r.roi),                  tr.tipRoiOnCapital],
-      ['roi-purple', tr.annualROI,      pctPlain(r.annualROI),            tr.tipAnnualROI],
-      ['roi-purple', tr.profitMargin,   pctPlain(r.profitMargin),         tr.tipProfitMargin],
+      ['td-lbl', tr.totalCost,             fmt(r.totalInvestment)],
+      ['td-lbl', tr.activeCapitalLabel + ' (' + capitalSharePct + '%)', fmt(r.activeCapital)],
+      ['divider', tr.sectionResults,       ''],
+      ['td-lbl', tr.grossProfitLabel,      fmt(r.grossProfit),          tr.tipGrossProfit],
+      ['td-lbl', tr.capitalGainsTax,       '−' + fmt(r.cgt),           tr.tipCapitalGainsTax],
+      ['divider', dealTypeLabel + ' · ' + profitSharePct + '%', ''],
+      ['profit-purple', tr.netProfitLabel, fmt(r.activeNetProfit),      tr.tipNetProfit],
+      ['roi-purple', tr.roiOnCapital,      pctPlain(r.roi),             tr.tipRoiOnCapital],
+      ['roi-purple', tr.annualROI,         pctPlain(r.annualROI),       tr.tipAnnualROI],
+      ['roi-purple', tr.profitMargin,      pctPlain(r.profitMargin),    tr.tipProfitMargin],
     ].filter(Boolean);
     document.getElementById('ap-table').innerHTML = buildTableRows(rows);
     document.getElementById('ap-col-head')?.classList.toggle('col-head-loss', r.activeNetProfit < 0);
@@ -432,27 +429,25 @@
 
   function renderPassivePartner(r, eraInfo) {
     const tr = t();
-    const passivePct = Math.round(r.passiveShare * 100);
-    const activePct  = Math.round((1 - r.passiveShare) * 100);
+    const capitalSharePct = Math.round(r.passiveShare * 100);
+    const profitSharePct  = Math.round(r.passiveProfitPct * 100);
+    const dealTypeLabel   = r.isFastFlip ? tr.fastFlip : tr.standardDeal;
     document.getElementById('pp-metric-capital').textContent = fmt(r.capitalRequired);
     document.getElementById('pp-metric-profit').textContent  = fmt(r.passiveNetProfit);
     document.getElementById('pp-metric-roi').textContent     = pctPlain(r.roi);
     document.getElementById('pp-metric-annroi').textContent  = pctPlain(r.annualROI);
 
     const rows = [
-      ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
-      ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
-      ['divider', tr.sectionResults,    ''],
-      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit),              tr.tipGrossProfit],
-      ['td-lbl', tr.mgmtFeeLabel + ' (→ ' + tr.scenarioActive + ')', '−' + fmt(r.mgmtFee), tr.tipMgmtFeeLabel],
-      ['td-lbl', tr.profitAfterMgmtLabel, fmt(r.profitAfterMgmt)],
-      ['divider', tr.scenarioPassive,   ''],
-      ['td-lbl', tr.passiveProfitShare, fmt(r.passiveProfitShare)],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.passiveCGT),         tr.tipCapitalGainsTax],
-      ['blue-profit', tr.netProfitLabel, fmt(r.passiveNetProfit),         tr.tipNetProfit],
-      ['roi-blue', tr.roiOnCapital,     pctPlain(r.roi),                  tr.tipRoiOnCapital],
-      ['roi-blue', tr.annualROI,        pctPlain(r.annualROI),            tr.tipAnnualROI],
-      ['roi-blue', tr.profitMargin,     pctPlain(r.profitMargin),         tr.tipProfitMargin],
+      ['td-lbl', tr.totalCost,           fmt(r.totalInvestment)],
+      ['td-lbl', tr.passiveCapitalLabel + ' (' + capitalSharePct + '%)', fmt(r.passiveCapital)],
+      ['divider', tr.sectionResults,     ''],
+      ['td-lbl', tr.grossProfitLabel,    fmt(r.grossProfit),             tr.tipGrossProfit],
+      ['td-lbl', tr.capitalGainsTax,     '−' + fmt(r.cgt),              tr.tipCapitalGainsTax],
+      ['divider', dealTypeLabel + ' · ' + profitSharePct + '%', ''],
+      ['blue-profit', tr.netProfitLabel, fmt(r.passiveNetProfit),        tr.tipNetProfit],
+      ['roi-blue', tr.roiOnCapital,      pctPlain(r.roi),                tr.tipRoiOnCapital],
+      ['roi-blue', tr.annualROI,         pctPlain(r.annualROI),          tr.tipAnnualROI],
+      ['roi-blue', tr.profitMargin,      pctPlain(r.profitMargin),       tr.tipProfitMargin],
     ].filter(Boolean);
     document.getElementById('pp-table').innerHTML = buildTableRows(rows);
     document.getElementById('pp-col-head')?.classList.toggle('col-head-loss', r.passiveNetProfit < 0);
@@ -531,7 +526,7 @@
     const apF = withFmt(ap);
     const ppF = withFmt(pp);
 
-    const passiveShare = Math.round(params.yourSharePct || 50);
+    const passiveShare = Math.round(params.yourSharePct || 75);
     const activeShare  = 100 - passiveShare;
     const label = tr.verdictLabel;
 
@@ -637,7 +632,6 @@ document.getElementById('btn-print')?.addEventListener('click', () => window.pri
     setRange('inp-arv', params.arv);
     setRange('inp-months', params.projectMonths);
     setRange('inp-share', params.yourSharePct);
-    setRange('inp-mgmt', params.mgmtFeePct);
     const rq = document.getElementById('inp-reno-q');
     if (rq) rq.value = params.renoQuality;
     const era = document.getElementById('inp-era');
@@ -648,7 +642,6 @@ document.getElementById('btn-print')?.addEventListener('click', () => window.pri
     document.getElementById('inp-arv-val').textContent     = fmt(params.arv);
     document.getElementById('inp-months-val').textContent  = t().months(params.projectMonths);
     document.getElementById('inp-share-val').textContent   = params.yourSharePct + '%';
-    document.getElementById('inp-mgmt-val').textContent    = params.mgmtFeePct + '%';
     syncArvUI();
   }
 

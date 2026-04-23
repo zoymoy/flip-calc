@@ -392,6 +392,14 @@ input[type=range]::-moz-range-thumb {
 .teal .col-title { color: #085041; }
 .purple .col-title { color: #3C3489; }
 .blue .col-title { color: #0f4a82; }
+.col-partner-name {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
 
 /* Metric summary pills at top of column */
 .col-metrics {
