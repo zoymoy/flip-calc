@@ -218,6 +218,15 @@ input[type=text]:focus, input[type=number]:focus, select:focus {
   border-color: var(--teal);
   background: #fff;
 }
+input[type=text][readonly] {
+  cursor: default;
+  color: var(--text-muted, var(--text));
+  background: var(--surface-alt, var(--surface));
+}
+input[type=text][readonly]:focus {
+  border-color: var(--border-strong);
+  background: var(--surface-alt, var(--surface));
+}
 input[type=range] {
   -webkit-appearance: none;
   width: 100%;

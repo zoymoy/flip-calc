@@ -180,6 +180,11 @@
       const key = el.dataset.i18nPh;
       if (tr[key] !== undefined) el.placeholder = tr[key];
     });
+    // Input value substitution by data-i18n-val (for readonly text inputs)
+    document.querySelectorAll('[data-i18n-val]').forEach(el => {
+      const key = el.dataset.i18nVal;
+      if (tr[key] !== undefined) el.value = tr[key];
+    });
     // Tooltip text (data-i18n-tip → data-tip attribute, read by CSS ::after)
     document.querySelectorAll('[data-i18n-tip]').forEach(el => {
       const key = el.dataset.i18nTip;
@@ -230,7 +235,7 @@
     bind('inp-months',   'projectMonths', 'range');
     bind('inp-reno-q',   'renoQuality',   'select');
     bind('inp-reno-custom','renoCustomAmt','number');
-    bind('inp-tax',      'taxStructure',  'select');
+    // inp-tax is readonly — no bind needed
     bind('inp-era',      'buildingEra',   'select');
     bind('inp-share',    'yourSharePct',  'range');
     bind('inp-mgmt',     'mgmtFeePct',    'range');
@@ -637,8 +642,6 @@ document.getElementById('btn-print')?.addEventListener('click', () => window.pri
     setRange('inp-mgmt', params.mgmtFeePct);
     const rq = document.getElementById('inp-reno-q');
     if (rq) rq.value = params.renoQuality;
-    const tax = document.getElementById('inp-tax');
-    if (tax) tax.value = params.taxStructure;
     const era = document.getElementById('inp-era');
     if (era) era.value = params.buildingEra || '1978';
     // Update display
