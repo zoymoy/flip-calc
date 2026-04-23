@@ -57,13 +57,12 @@ window.Calculator = {
 
   /**
    * Calculate capital gains tax
-   * Romanian Fiscal Code Art. 111: 3% if sold ≤ 3 years, 1% if sold > 3 years
+   * Flip deals: 3% of ARV (Art. 111 — sold within 3 years)
    */
-  calcCGT(grossProfit, projectMonths) {
+  calcCGT(arv) {
     const A = window.ASSUMPTIONS;
-    if (grossProfit <= 0) return 0;
-    const rate = A.cgtIndividualShortPct; // 3% — flips are short-term by definition
-    return Math.round(grossProfit * rate / 100);
+    if (arv <= 0) return 0;
+    return Math.round(arv * A.cgtIndividualShortPct / 100);
   },
 
   /**
@@ -77,7 +76,7 @@ window.Calculator = {
 
     const totalInvestment = params.purchasePrice + acq.total + renoObj.total + holding.total;
     const grossProfit = params.arv - totalInvestment - saleCosts.total;
-    const cgt = this.calcCGT(grossProfit, params.projectMonths);
+    const cgt = this.calcCGT(params.arv);
     const netProfit = grossProfit - cgt;
 
     const roi = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
@@ -113,7 +112,7 @@ window.Calculator = {
     const profitAfterMgmt  = base.grossProfit - mgmtFee;
     const activeProfitShare  = Math.round(profitAfterMgmt * activeShare);
     const activeGrossProfit  = mgmtFee + activeProfitShare;
-    const activeCGT          = this.calcCGT(activeGrossProfit, params.projectMonths);
+    const activeCGT          = Math.round(this.calcCGT(params.arv) / 2);
     const activeNetProfit    = activeGrossProfit - activeCGT;
 
     const roi      = activeCapital > 0 ? (activeNetProfit / activeCapital) * 100 : 0;
@@ -146,7 +145,7 @@ window.Calculator = {
     const mgmtFee          = Math.round(base.grossProfit * mgmtRate);
     const profitAfterMgmt  = base.grossProfit - mgmtFee;
     const passiveProfitShare = Math.round(profitAfterMgmt * passiveShare);
-    const passiveCGT         = this.calcCGT(passiveProfitShare, params.projectMonths);
+    const passiveCGT         = Math.round(this.calcCGT(params.arv) / 2);
     const passiveNetProfit   = passiveProfitShare - passiveCGT;
 
     const roi      = passiveCapital > 0 ? (passiveNetProfit / passiveCapital) * 100 : 0;

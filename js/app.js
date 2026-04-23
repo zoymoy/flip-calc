@@ -415,9 +415,8 @@
     const rows = [
       ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
       ['td-lbl', tr.activeCapitalLabel + ' (' + activePct + '%)',  fmt(r.activeCapital)],
-      ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
       ['divider', tr.sectionResults,    ''],
-      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit)],
+      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit),              tr.tipGrossProfit],
       ['divider', tr.scenarioActive,    ''],
       ['td-lbl', tr.mgmtFeeLabel,       fmt(r.mgmtFee),                  tr.tipMgmtFeeLabel],
       ['td-lbl', tr.activeProfitShare,  fmt(r.activeProfitShare)],
@@ -443,9 +442,8 @@
     const rows = [
       ['td-lbl', tr.totalCost,          fmt(r.totalInvestment)],
       ['td-lbl', tr.passiveCapitalLabel + ' (' + passivePct + '%)', fmt(r.passiveCapital)],
-      ['td-lbl', tr.activeCapitalLabel  + ' (' + activePct + '%)',  fmt(r.activeCapital)],
       ['divider', tr.sectionResults,    ''],
-      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit)],
+      ['td-lbl', tr.grossProfitLabel,   fmt(r.grossProfit),              tr.tipGrossProfit],
       ['td-lbl', tr.mgmtFeeLabel + ' (→ ' + tr.scenarioActive + ')', '−' + fmt(r.mgmtFee), tr.tipMgmtFeeLabel],
       ['td-lbl', tr.profitAfterMgmtLabel, fmt(r.profitAfterMgmt)],
       ['divider', tr.scenarioPassive,   ''],
