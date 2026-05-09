@@ -276,7 +276,7 @@
     const pp = results.passive;
 
     const sel = document.getElementById('stock-col-select');
-    const selectedVal = sel ? sel.value : 'equity';
+    const selectedVal = sel ? sel.value : 'active';
     const best = selectedVal === 'active' ? ap
                : selectedVal === 'passive' ? pp
                : eq;
@@ -360,7 +360,7 @@
 
   // ── Render results tables ──────────────────────────────────────────────────
   function renderResults(results) {
-    renderEquity(results.equity, results.eraInfo);
+    renderBreakdown(results);
     renderActivePartner(results.active, results.eraInfo);
     renderPassivePartner(results.passive, results.eraInfo);
   }
@@ -369,37 +369,65 @@
     return `<div class="col-metric"><div class="col-metric-lbl">${label}</div><div class="col-metric-val ${cls || ''}">${value}</div></div>`;
   }
 
-  function renderEquity(r, eraInfo) {
-    const tr = t();
-    // Metrics
-    document.getElementById('eq-metric-capital').textContent = fmt(r.capitalRequired);
-    document.getElementById('eq-metric-profit').textContent  = fmt(r.netProfit);
-    document.getElementById('eq-metric-roi').textContent     = pctPlain(r.roi);
-    document.getElementById('eq-metric-annroi').textContent  = pctPlain(r.annualROI);
+  function renderBreakdown(results) {
+    const r      = results.equity;
+    const passive = results.passive;
+    const active  = results.active;
+    const p      = results.params;
+    const tr     = t();
+    const A      = window.ASSUMPTIONS;
 
-    // Table
+    const bdInv = document.getElementById('bd-metric-investment');
+    const bdGross = document.getElementById('bd-metric-gross');
+    const bdCgt = document.getElementById('bd-metric-cgt');
+    const bdNet = document.getElementById('bd-metric-net');
+    const bdTable = document.getElementById('bd-table');
+    if (!bdTable) return;
+
+    if (bdInv)   bdInv.textContent   = fmt(r.totalInvestment);
+    if (bdGross) bdGross.textContent = fmt(r.grossProfit);
+    if (bdCgt)   bdCgt.textContent   = '−' + fmt(r.cgt);
+    if (bdNet)   bdNet.textContent   = fmt(r.netProfit);
+
+    const rates = { low: A.renoLow, midLow: A.renoMidLow, mid: A.renoMid, midHigh: A.renoMidHigh, high: A.renoHigh };
+    const renoRate = p.renoQuality === 'custom'
+      ? Math.round(r.reno / Math.max(1, p.propertySize))
+      : (rates[p.renoQuality] || A.renoMid);
+
+    const nonRenoCosts  = r.totalInvestment - r.reno;
+    const dealTypeLabel = active.isFastFlip ? tr.fastFlip : tr.standardDeal;
+    const activePct     = Math.round(active.activeProfitPct * 100);
+    const passivePct    = Math.round(passive.passiveProfitPct * 100);
+
     const rows = [
-      ['td-lbl', tr.purchasePriceLabel, fmt(r.purchasePrice)],
-      ['td-lbl', tr.notaryFee,          fmt(r.acq.notary),               tr.tipNotaryFee],
-      ['td-lbl', tr.buyerAgent,         fmt(r.acq.buyerAgent),           tr.tipBuyerAgent],
-      ['td-lbl', tr.landRegistry,       fmt(r.acq.landRegistry),         tr.tipLandRegistry],
-      ['td-lbl', tr.renoLabel,          fmt(r.reno),                     tr.tipRenoLabel],
-      ['td-lbl', tr.utilityHolding,     fmt(r.holding.utility)],
-      ['td-lbl', tr.propTaxHolding,     fmt(r.holding.propTax)],
-      ['td-lbl', tr.maintHolding,       fmt(r.holding.maint)],
-      ['td-lbl', tr.insuranceHolding,   fmt(r.holding.insurance)],
-      ['divider', tr.totalInvestment,   fmt(r.totalInvestment)],
-      ['td-lbl', tr.saleProceeds,       fmt(r.arv)],
-      ['td-lbl', tr.sellerAgent,        fmt(r.saleCosts.sellerAgent),    tr.tipSellerAgent],
-      ['td-lbl', tr.sellerNotary,       fmt(r.saleCosts.sellerNotary),   tr.tipSellerNotary],
-      ['td-lbl', tr.capitalGainsTax,    '−' + fmt(r.cgt),               tr.tipCapitalGainsTax],
-      ['profit', tr.netProfit,          fmt(r.netProfit),                tr.tipNetProfit],
-      ['roi',    tr.roiOnCapital,       pctPlain(r.roi),                 tr.tipRoiOnCapital],
-      ['roi',    tr.annualROI,          pctPlain(r.annualROI),           tr.tipAnnualROI],
-      ['roi',    tr.profitMargin,       pctPlain(r.profitMargin),        tr.tipProfitMargin],
-    ].filter(Boolean);
-    document.getElementById('eq-table').innerHTML = buildTableRows(rows);
-    document.getElementById('eq-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
+      ['divider', tr.renoLabel, ''],
+      ['td-lbl',  `€${renoRate}/m² × ${p.propertySize}m²`, fmt(r.reno)],
+      ['divider', 'Acquisition Costs', ''],
+      ['td-lbl',  tr.notaryFee,    fmt(r.acq.notary)],
+      ['td-lbl',  tr.buyerAgent,   fmt(r.acq.buyerAgent)],
+      ['td-lbl',  tr.landRegistry, fmt(r.acq.landRegistry)],
+      ['divider', `Holding Costs (${tr.months(p.projectMonths)})`, ''],
+      ['td-lbl',  tr.utilityHolding,   fmt(r.holding.utility)],
+      ['td-lbl',  tr.propTaxHolding,   fmt(r.holding.propTax)],
+      ['td-lbl',  tr.maintHolding,     fmt(r.holding.maint)],
+      ['td-lbl',  tr.insuranceHolding, fmt(r.holding.insurance)],
+      ['divider', tr.totalInvestment,  fmt(r.totalInvestment)],
+      ['td-lbl',  tr.sellerAgent,  fmt(r.saleCosts.sellerAgent)],
+      ['td-lbl',  tr.sellerNotary, fmt(r.saleCosts.sellerNotary)],
+      ['divider', tr.grossProfitLabel, fmt(r.grossProfit)],
+      ['td-lbl',  tr.capitalGainsTax,  '−' + fmt(r.cgt)],
+      ['profit',  tr.netProfit,        fmt(r.netProfit)],
+      ['divider', 'Capital Split', ''],
+      ['td-lbl',  'Non-reno costs', fmt(nonRenoCosts)],
+      ['td-lbl',  `Yoav (${Math.round(passive.passiveShare * 100)}%)`, fmt(passive.passiveCapital)],
+      ['td-lbl',  `Costi (${Math.round(active.activeShare * 100)}% + reno)`, fmt(active.activeCapital)],
+      ['divider', `Profit Split — ${dealTypeLabel}`, ''],
+      ['blue-profit',   `Yoav (${passivePct}%)`,  fmt(passive.passiveNetProfit)],
+      ['profit-purple', `Costi (${activePct}%)`,  fmt(active.activeNetProfit)],
+    ];
+
+    bdTable.innerHTML = buildTableRows(rows);
+    document.getElementById('bd-col-head')?.classList.toggle('col-head-loss', r.netProfit < 0);
   }
 
   function renderActivePartner(r, eraInfo) {
@@ -520,26 +548,15 @@
 
   function renderSummaries(results) {
     const tr = t();
-    const { equity: eq, active: ap, passive: pp } = results;
+    const { active: ap, passive: pp } = results;
 
     const withFmt = r => Object.assign({ fmt }, r);
-    const eqF = withFmt(eq);
     const apF = withFmt(ap);
     const ppF = withFmt(pp);
 
     const passiveShare = Math.round(params.yourSharePct || 75);
     const activeShare  = 100 - passiveShare;
     const label = tr.verdictLabel;
-
-    // Equity
-    const eqEl = document.getElementById('eq-summary');
-    if (eqEl) eqEl.innerHTML = buildSummaryHTML(
-      tr.summaryEquityExplain(eqF),
-      tr.summaryEquityPros,
-      tr.summaryEquityCons(eqF, ppF),
-      tr.summaryEquityVerdict(eqF),
-      'teal', label
-    );
 
     // Active Partner
     const apEl = document.getElementById('ap-summary');

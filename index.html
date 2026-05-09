@@ -159,7 +159,6 @@
         <div class="card">
           <div class="card-section" data-i18n="vsStockMarket">VS Stock Market</div>
           <select id="stock-col-select" class="stock-col-select">
-            <option value="equity"  data-i18n="scenario100">100% Self</option>
             <option value="active"  data-i18n="scenarioActive">Active Partner</option>
             <option value="passive" data-i18n="scenarioPassive">Passive Partner</option>
           </select>
@@ -195,32 +194,31 @@
         <!-- 3 scenario columns -->
         <div class="results-grid">
 
-          <!-- 100% Equity -->
+          <!-- Deal Breakdown -->
           <div class="scenario-col">
-            <div class="scenario-col-head teal" id="eq-col-head">
+            <div class="scenario-col-head teal" id="bd-col-head">
               <div class="col-dot"></div>
-              <span class="col-title" data-i18n="scenario100">100% Self</span>
+              <span class="col-title">Deal Breakdown</span>
             </div>
             <div class="col-metrics">
               <div class="col-metric">
-                <div class="col-metric-lbl" data-i18n="capitalRequired">Capital Required<span class="tip-icon" data-i18n-tip="tipCapitalRequired" tabindex="0">ⓘ</span></div>
-                <div class="col-metric-val positive" id="eq-metric-capital">—</div>
+                <div class="col-metric-lbl">Total Investment</div>
+                <div class="col-metric-val positive" id="bd-metric-investment">—</div>
               </div>
               <div class="col-metric">
-                <div class="col-metric-lbl" data-i18n="netProfitLabel">Net Profit<span class="tip-icon" data-i18n-tip="tipNetProfit" tabindex="0">ⓘ</span></div>
-                <div class="col-metric-val positive" id="eq-metric-profit">—</div>
+                <div class="col-metric-lbl">Gross Profit</div>
+                <div class="col-metric-val positive" id="bd-metric-gross">—</div>
               </div>
               <div class="col-metric">
-                <div class="col-metric-lbl" data-i18n="roiOnCapital">ROI<span class="tip-icon" data-i18n-tip="tipRoiOnCapital" tabindex="0">ⓘ</span></div>
-                <div class="col-metric-val positive" id="eq-metric-roi">—</div>
+                <div class="col-metric-lbl">CGT</div>
+                <div class="col-metric-val" id="bd-metric-cgt">—</div>
               </div>
               <div class="col-metric">
-                <div class="col-metric-lbl" data-i18n="annualROI">Annual ROI<span class="tip-icon" data-i18n-tip="tipAnnualROI" tabindex="0">ⓘ</span></div>
-                <div class="col-metric-val positive" id="eq-metric-annroi">—</div>
+                <div class="col-metric-lbl">Net Profit (Deal)</div>
+                <div class="col-metric-val positive" id="bd-metric-net">—</div>
               </div>
             </div>
-            <table class="cost-table" id="eq-table"></table>
-            <div class="col-summary teal" id="eq-summary"></div>
+            <table class="cost-table" id="bd-table"></table>
           </div>
 
           <!-- Active Partner -->
@@ -300,7 +298,6 @@
           <div class="sensitivity-card-header">
             <div class="chart-title" data-i18n="sensitivityTitle">Sensitivity Analysis</div>
             <select id="sensitivity-scenario-select" class="sensitivity-scenario-select">
-              <option value="equity"  data-i18n="scenario100">100% Self</option>
               <option value="active"  data-i18n="scenarioActive">Active Partner</option>
               <option value="passive" data-i18n="scenarioPassive">Passive Partner</option>
             </select>
